@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Funambol is a mobile platform developed by Funambol, Inc.
+ * Copyright (C) 2003 - 2007 Funambol, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by
+ * the Free Software Foundation with the addition of the following permission
+ * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED
+ * WORK IN WHICH THE COPYRIGHT IS OWNED BY FUNAMBOL, FUNAMBOL DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT  OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA.
+ *
+ * You can contact Funambol, Inc. headquarters at 643 Bair Island Road, Suite
+ * 305, Redwood City, CA 94063, USA, or at email address info@funambol.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Powered by Funambol" logo. If the display of the logo is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Powered by Funambol".
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.funambol.android">
+
+    <!-- Backward compatible with 2.0 devices, until we introduce 1.6 portability -->
+    <uses-sdk android:minSdkVersion="5" />
+    <uses-permission android:name="android.permission.READ_OWNER_DATA"/>
+    <uses-permission android:name="android.permission.WRITE_OWNER_DATA"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.SET_PREFERRED_APPLICATIONS"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application android:icon="@drawable/logo"
+            android:label="@string/app_name" android:debuggable="true"
+            android:theme="@android:style/Theme.Light">
+
+        <activity android:name="com.funambol.android.activities.AndroidHomeScreen" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.funambol.android.activities.AndroidAboutScreen" android:label="@string/about_label"/>
+
+        <activity android:name="com.funambol.android.UnitTestActivity" android:label="Unit Tests"/>
+        
+        <activity android:name="com.funambol.android.activities.AndroidSettingsScreen" android:label="@string/settings_label"/>
+
+        <activity android:name="com.funambol.android.UnitTestAuthenticator" android:label="@string/account_label">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.funambol.android.edit_contact.AndroidEditContact"
+            android:label="@string/label_contact_edit" android:theme="@android:style/Theme">
+
+            <intent-filter android:label="@string/label_contact_edit">
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/person" android:host="contacts" />
+                <data android:mimeType="vnd.android.cursor.item/contact" android:host="com.android.contacts" />
+                <data android:mimeType="vnd.android.cursor.item/raw_contact" android:host="com.android.contacts" />
+            </intent-filter>
+
+            <intent-filter android:label="@string/label_contact_insert">
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/person" />
+                <data android:mimeType="vnd.android.cursor.dir/contact" />
+                <data android:mimeType="vnd.android.cursor.dir/raw_contact" />
+            </intent-filter> 
+            
+        </activity>
+
+        <provider android:name="com.funambol.android.providers.PicturesContentProvider"
+                  android:authorities="com.funambol.images"
+                  android:label="@string/pictures_provider_label"
+                  android:exported="false"
+                  android:writePermission="false">
+        </provider>
+
+        <provider android:name="com.funambol.android.providers.VideosContentProvider"
+          android:authorities="com.funambol.videos"
+          android:label="@string/videos_provider_label"
+          android:exported="false"
+          android:writePermission="false">
+        </provider>
+
+        <receiver android:name="com.funambol.android.StartupIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" android:path="com.funambol.android"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.funambol.android.services.AutoSyncService">
+            <intent-filter>
+                <action android:name="com.funambol.android.services.AutoSyncService"/>
+            </intent-filter>
+        </service>
+
+        <service android:name="com.funambol.android.services.FunambolAccountsAuthenticator">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
+        </service>
+        
+        <service android:name="com.funambol.android.services.ContactsSyncAdapterService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/contacts_syncadapter" />
+        </service>
+        
+        <service android:name="com.funambol.android.services.CalendarSyncAdapterService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/calendar_syncadapter" />
+        </service>
+        
+        <service android:name="com.funambol.android.services.CalendarSyncAdapterService2" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/calendar_syncadapter2" />
+        </service>
+
+        <service android:name="com.funambol.android.services.MediaSyncAdapterService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/media_syncadapter" />
+        </service>
+        
+        <receiver android:label="Account Receiver" android:name="com.funambol.android.AndroidAccountManager">
+            <intent-filter>
+                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:label="AutoSyncAlarm Receiver" android:name="com.funambol.android.services.SynchronizationTask">
+            <intent-filter>
+                <action android:name="com.funambol.android.AUTO_SYNC"/>
+            </intent-filter>
+        </receiver>
+        
+        <service android:name="com.funambol.android.services.EmptyService" android:exported="false" />
+    
+        <uses-library android:name="android.test.runner" />
+        
+        <activity android:name="com.funambol.android.AndroidTestReport" android:label="Funambol Test Report"/>
+
+        <activity android:name="com.funambol.android.AndroidTestUrl" android:label="Insert custom Test Url"/>
+        
+    </application>
+
+    <!-- Declare the Unit Tests runner -->
+    <instrumentation android:name="android.test.InstrumentationTestRunner"
+            android:targetPackage="com.funambol.android"
+            android:label="Funambol Unit Test" />
+  
+    <!-- Declare the Integration Tests runner -->
+    <instrumentation android:name="com.funambol.android.AndroidScriptRunner"
+            android:targetPackage="com.funambol.android"
+            android:label="Funambol Integration Test" />
+            
+</manifest>
+

@@ -1,0 +1,18 @@
+BeginTest("c2s_12");
+
+DeleteAllEvents();
+CreateEmptyEvent();
+SetEventField("Start", "20101222T100000Z");
+SetEventField("End", "20110122T110000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test22dec");
+SetEventField("Location", "pavia");
+SetEventField("Description", "note");
+SaveEvent();
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test22dec",true);
+CheckEventAsVCal("Test22dec","BEGIN:VCALENDAR\r\nVERSION:1.0\r\nBEGIN:VEVENT\r\nSUMMARY:Test22dec\r\nDESCRIPTION:note\r\nLOCATION:pavia\r\nCLASS:PUBLIC\r\nDTSTART:20101222T100000Z\r\nDTEND:20110122T110000Z\r\nX-FUNAMBOL-ALLDAY:0\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+EndTest();
+

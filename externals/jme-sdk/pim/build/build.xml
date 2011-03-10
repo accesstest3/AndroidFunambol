@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol J2ME Pim API.
+================================================================================
+-->
+
+
+
+<project name="Funambol J2ME Pim" default="build" basedir="..">
+    <!-- Define the tasks. -->
+    <taskdef resource="antenna.properties"/>
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="build/build.properties"/>
+
+        <!-- External dependencies -->
+        <property name="lib.junit"  value="${basedir}/lib/JMUnit4CLDC10.jar"/>
+        <property name="bb.api.jar" location="${bb.jdehome}/lib/net_rim_api.jar"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        
+        <echo message=""/>
+        <echo message="Funambol J2ME Pim API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage      --> help on usage"/>
+        <echo message=" build      --> builds the project"/>
+        <echo message=" rebuild    --> cleans and builds the project"/>
+        <echo message=" test       --> builds the test project"/>
+        <echo message=" docs       --> builds java-doc"/>
+        <echo message=" run        --> builds and runs the test project"/>
+        <echo message=" debug      --> builds and runs the test with debug active"/>
+        <echo message=" release    --> build release packages"/>
+        <echo message=" clean      --> clean up the build directory"/>
+        <echo message=""/>
+        
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+        <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <ant antfile="build/me/build.xml" target="clean"/>
+        <ant antfile="build/bb/build.xml" target="clean"/>
+        <ant antfile="build/se/build.xml" target="clean"/>
+        <ant antfile="build/android/build.xml" target="clean"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="clean,build"/>
+    
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="compile">
+        
+        <!--======= Jar up everything ========-->
+        <echo message="Packaging library"/>
+        
+        <jar destfile="${dir.output}/${j2me.name}.jar">
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+        </jar>
+        
+    </target>
+
+    <target name="build_bb" depends="compile_bb">
+        
+        <!--======= Jar up everything ========-->
+        <echo message="jar up pim lib"/>
+        <jar destfile="${dir.output}/${j2me.name}.jar">
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+        </jar>
+    </target>
+
+    
+    <target name="compile" depends="init">
+        <ant antfile="build/build_single.xml" target="compile_single"/>
+    </target>
+    
+    <target name="compile_bb" depends="init">
+        <ant antfile="build/build_single.xml" target="compile_single">
+            <property name="platform" value="blackberry"/>
+            <property name="libs.extra" value="${bb.api.jar}"/>
+        </ant>
+    </target>
+
+    <target name="compile_test" depends="init">
+        <ant antfile="build/build_single.xml" target="compile_test">
+        </ant>
+    </target>
+ 
+    <target name="compile_test_bb" depends="init">
+        <ant antfile="build/build_single.xml" target="compile_test_bb">
+        <property name="platform" value="blackberry"/>
+        <property name="libs.extra" value="${bb.api.jar}"/>
+        </ant>
+    </target>
+ 
+    
+    <!-- =============================================== -->
+    <!-- TEST                                            -->
+    <!-- =============================================== -->
+    <target name="test" depends="init, clean, compile, compile_test">
+        <ant antfile="build/build_single.xml" target="test_single"/>
+    </target>
+
+    <target name="test_bb" depends="init, clean, compile_bb, compile_test_bb">
+        <ant antfile="build/build_single.xml"     target="test_single_bb">
+            <property name="platform" value="blackberry"/>
+            <property name="libs.extra" value="${bb.api.jar}"/>
+        </ant>
+        <ant antfile="build/build_blackberry.xml" target="rapc">
+            <property name="platform" value="blackberry"/>
+            <property name="libs.extra" value="${bb.api.jar}"/>
+        </ant>
+        <ant antfile="build/build_blackberry.xml" target="bbsimulatorinstall">
+            <property name="platform" value="blackberry"/>
+            <property name="libs.extra" value="${bb.api.jar}"/>
+        </ant>
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- RUN                                             -->
+    <!-- =============================================== -->
+    <target name="run" depends="test">
+        <ant antfile="build/build_single.xml" target="runj2me"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DEBUG                                           -->
+    <!-- =============================================== -->
+    <target name="debug" depends="test">
+        <ant antfile="build/build_single.xml" target="debugj2me"/>
+    </target>
+ 
+    
+    <!-- =============================================== -->
+    <!-- JAVADOC                                         -->
+    <!-- =============================================== -->
+    <target name="javadoc" depends="init">
+        <ant antfile="build/me/build.xml" target="docs"/>
+        <ant antfile="build/bb/build.xml" target="docs"/>
+        <ant antfile="build/se/build.xml" target="docs"/>
+        <ant antfile="build/android/build.xml" target="docs"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <javadoc destdir="${dir.html}" author="true" version="true"
+                 use="true" windowtitle="Funambol SyncML API"
+                 sourcepath="${dir.src}"
+                 packagenames="com.funambol.*"
+                 classpath="${classpath};${wtk.home}/lib/midpapi20.jar;${lib.funambol.common}">
+
+            <doctitle>
+                <![CDATA[<!--img src="logo.gif"--> <h1>Funambol Java SyncML API ${version} for ${platform}</h1>]]>
+            </doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2001-2009 Funambol.</i>]]></bottom>
+
+        </javadoc>
+    </target>
+
+</project>

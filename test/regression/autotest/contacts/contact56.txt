@@ -1,0 +1,35 @@
+#SyncContacts56
+#----On server side modify one record and delete one record in the Contacts section / Slow Sync----
+
+BeginTest("On server side modify one record and delete one record in the Contacts section / Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Load a Contact on Server side and modify some fields of this
+LoadContactOnServer("Giuseppe","Rossi");
+SetContactField(SuffixName,"suffisso");
+SetContactField(NickName,"GR");
+SetContactField(TelHome,"111");
+SetContactField(TelWork,"111");
+SetContactField(TelOther,"111");
+SetContactField(Children,"Vincenzo");
+SetContactField(Spouse,"prova");
+SetContactField(Title,"titolo");
+SaveContactOnServer();
+
+#Delete a Contact on Device side
+DeleteContactOnServer("Mario","Bianchi");
+
+RefreshServer(Contacts);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,0,3,0);
+EndTest();

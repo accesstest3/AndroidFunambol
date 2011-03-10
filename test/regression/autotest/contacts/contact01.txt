@@ -1,0 +1,63 @@
+#SyncContacts01
+#----On the Server add a record in the Contacts section filling in all possible fields / Sync----
+
+BeginTest("On the Server add a record in the Contacts section filling in all possible fields / Sync");
+
+#include in this test deleteall test file for delete all contacts on both sides
+Include(deleteall.txt);
+
+#Create on Server side a new Contact (Mario Rossi);
+CreateEmptyContactOnServer();
+SetContactField(DisplayName,"MarioR");
+SetContactField(FirstName,"Mario");
+SetContactField(LastName,"Rossi");
+SetContactField(MiddleName,"m");
+SetContactField(PrefixName,"p");
+SetContactField(SuffixName,"suff");
+SetContactField(NickName,"MarioRossi");
+SetContactField(TelHome,"489320");
+SetContactField(TelWork,"038245634");
+SetContactField(TelOther,"0356821234");
+SetContactField(TelOther2,"0356824598594");
+SetContactField(TelCell,"344565674");
+SetContactField(TelPager,"4875566387");
+SetContactField(TelFaxHome,"6756567");
+SetContactField(TelFaxWork,"7656567");
+SetContactField(TelCompany,"125634");
+SetContactField(TelOtherFax,"12315644566");
+SetContactField(EmailHome,"mario.rossi@gmail.com");
+SetContactField(EmailWork,"mario.rossi@work.com");
+SetContactField(EmailOther,"mario.rossi@other.com");
+SetContactField(Birthday,"1976-12-19");
+SetContactField(Organization,"Funambol;TestPlanning");
+SetContactField(Im,"mario.rossi@yahoo.com");
+SetContactField(AddressHome,"post;via Bricchetti;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(Website,"http://www.google.it/");
+SetContactField(WebsiteHome,"http://www.unipv.it/");
+SetContactField(WebsiteWork,"http://www.myfunambol.com/");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"Marco");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Dott.");
+SetContactField(Note,"Prova");
+#SetContactField(Photo,"/sdcard/media/immagine40.jpg");
+SaveContactOnServer();
+RefreshServer(Contacts);
+
+CheckItemsCountOnServer("Contacts",1);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(6,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,1,0,0);
+
+#Verify if the contact is added on Devide
+CheckNewContact("Mario","Rossi",true);
+
+CheckItemsCount("Contacts",1);
+
+EndTest();

@@ -1,0 +1,39 @@
+#Referring to testlist 4882_19
+
+BeginTest("4882_19");
+# Enable device Auto Sync and client C2S push
+Include (push_change_c2s_setting.txt);
+Wait(2);
+
+#Add a picture
+AddPicture(test-picture-2.jpg);
+Wait(2);
+CheckSyncPending(Pictures);
+
+Wait(2);
+# Attempting to start sync manually
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+
+# Manual sync is not starting as there is already a pending sync in progress.
+# Alert message is displayed
+Wait(2);
+CheckLastAlertMessage("A sync is running. Please wait.");
+
+Wait(4);
+
+WaitForSyncToComplete(Pictures, 30, 180);
+CheckExchangedData(Pictures, 1, 0, 0, 0, 0, 0) 
+
+Wait(2);
+
+#Delete picture
+DeletePicture(test-picture-2.jpg);
+
+WaitForSyncToComplete(Pictures, 30, 180);
+CheckExchangedData(Pictures, 0, 0, 1, 0, 0, 0) 
+
+Include (push_change_c2s_setting.txt);
+
+EndTest();

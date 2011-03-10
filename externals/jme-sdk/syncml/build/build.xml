@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol J2ME SyncML API.
+================================================================================
+-->
+
+
+<project name="Funambol J2ME SyncML" default="build" basedir="..">
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="build/common.properties"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        <echo message=""/>
+        <echo message="Funambol Java SyncML API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage      --> help on usage"/>
+        <echo message=" build      --> builds the project"/>
+        <echo message=" rebuild    --> cleans and builds the project"/>
+        <echo message=" clean      --> clean up the build directory"/>
+        <echo message=" src        --> Create the src package"/>
+        <echo message=""/>
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <ant antfile="build/me/build.xml" target="clean"/>
+        <ant antfile="build/bb/build.xml" target="clean"/>
+        <ant antfile="build/se/build.xml" target="clean"/>
+        <ant antfile="build/android/build.xml" target="clean"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="clean,build"/>
+    
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="init">
+    </target>
+
+    <!-- =============================================== -->
+    <!-- JAVADOC                                         -->
+    <!-- =============================================== -->
+    <target name="javadoc" depends="init">
+        <ant antfile="build/me/build.xml" target="docs"/>
+        <ant antfile="build/bb/build.xml" target="docs"/>
+        <ant antfile="build/se/build.xml" target="docs"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <javadoc destdir="${dir.html}" author="true" version="true"
+                 use="true" windowtitle="Funambol SyncML API"
+                 sourcepath="${dir.src}"
+                 packagenames="com.funambol.*"
+                 classpath="${classpath};${wtk.home}/lib/midpapi20.jar;${lib.funambol.common}">
+
+            <doctitle>
+                <![CDATA[<!--img src="logo.gif"--> <h1>Funambol Java SyncML API ${version} for ${platform}</h1>]]>
+            </doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2001-2009 Funambol.</i>]]></bottom>
+
+        </javadoc>
+    </target>
+
+</project>

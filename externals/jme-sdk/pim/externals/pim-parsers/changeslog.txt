@@ -1,0 +1,54 @@
+
+--------------------------------
+Funambol PIM Parsers 9.0.0
+--------------------------------
+2010-10-27
+- lulu: Fixed bug #10238 - error converting vcard to contact.
+
+--------------------------------
+Funambol PIM Parsers 8.7.0
+--------------------------------
+2010-01-27
+- mauro: Introduced support for vCard properties AGENT, PRODID and KEY.
+
+--------------------------------
+Funambol PIM Parsers 8.2.3
+--------------------------------
+2009-12-01
+- mauro: Implemented support for vCard fields IMPP.
+
+--------------------------------
+Funambol PIM Parsers 8.2.2
+--------------------------------
+2009-11-06
+- mauro: Implemented support for vCard field GEO.
+         Implemented support for vCard field MAILER.
+
+--------------------------------
+Funambol PIM Parsers 8.2.1
+--------------------------------
+2009-11-02
+- mauro: Changed design of classes used to parse vCard.
+         Implemented support for vCard field CLASS.
+
+--------------------------------
+Funambol PIM Parsers 8.2.0
+--------------------------------
+2009-06-17
+- carlo: Added support for VCalendar parsing
+
+2009-05-12
+- fabius: fixed Bug #7199 - DS version 7.1 generates invalid vCard
+
+2009-03-03
+- garatti: Added support for ICalendar parsing
+
+--------------------------------
+Funambol PIM Parsers 7.1.0
+--------------------------------
+2008-11-10
+- mauro: Added support for anniversary, children, companies, 
+         languages, manager, mileage, spouse and subject.
+
+2008-10-14
+- garatti: First implementation

@@ -1,0 +1,28 @@
+Wait(2);
+
+# Enable native auto sync
+SetAutoSyncEnabled(true);
+
+# Enter settings screen
+KeyPress(KeyMenu);
+KeyPress(KeyLeft);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Find C2S push setting
+KeyPress(KeyUp);
+KeyPress(KeyUp);
+KeyPress(KeyLeft);
+KeyPress(KeyLeft);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+
+# Enable C2S Push
+KeyPress(KeyFire);
+Wait(1);
+
+# Save settings
+KeyPress(KeyDown, 10);
+KeyPress(KeyFire);
+Wait(1);

@@ -1,0 +1,25 @@
+#SyncContacts31
+#----Force Slow Sync-----
+
+BeginTest("Force Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Luca Bianchi, Pallino Pinko) and do a fast sync
+Include(contact16.txt);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,0,4,0);
+RefreshServer(Contacts);
+
+#Verify if the contacts are updated on Server
+CheckUpdatedContactOnServer("Luca","Bianchi",true);
+CheckUpdatedContactOnServer("Mario","Bianchi",true);
+CheckUpdatedContactOnServer("Giuseppe","Rossi",true);
+CheckUpdatedContactOnServer("Pallino","Pinko",true);
+EndTest();

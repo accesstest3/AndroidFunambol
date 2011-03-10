@@ -1,0 +1,1167 @@
+/*
+ * Copyright (c) 2004 Harrie Hazewinkel. All rights reserved.
+ */
+
+/*
+ * Funambol is a mobile platform developed by Funambol, Inc.
+ * Copyright (C) 2003 - 2007 Funambol, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by
+ * the Free Software Foundation with the addition of the following permission
+ * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED
+ * WORK IN WHICH THE COPYRIGHT IS OWNED BY FUNAMBOL, FUNAMBOL DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT  OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA.
+ *
+ * You can contact Funambol, Inc. headquarters at 643 Bair Island Road, Suite
+ * 305, Redwood City, CA 94063, USA, or at email address info@funambol.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Powered by Funambol" logo. If the display of the logo is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Powered by Funambol".
+ */
+
+options {
+    IGNORE_CASE = true;
+    DEBUG_TOKEN_MANAGER = false;
+    STATIC = false;
+    DEBUG_PARSER = false;
+    UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(VCardSyntaxParser)
+
+package com.funambol.common.pim.vcard;
+
+import java.io.InputStream;
+
+import com.funambol.common.pim.*;
+
+/**
+ * This class parses an input file formatted according to
+ * versit vCard 2.1 specification and generates an object model of the contact
+ * using the package com.funambol.pdi.contact
+ *
+ * @see Contact
+ * @version $Id: VCardParser.jj,v 1.7 2008-08-26 15:51:24 luigiafassina Exp $
+ */
+public class VCardSyntaxParser {
+
+    private VCardSyntaxParserListener listener;
+
+    public void parse() throws ParseException {
+        vCard();
+    }
+
+    public void setListener(VCardSyntaxParserListener listener) {
+        this.listener = listener;
+    }
+}
+
+PARSER_END(VCardSyntaxParser)
+
+void vCard() :
+{
+}
+{
+    {
+        listener.start();
+    }
+    (<EOL> | <WS>)*
+    <VCBEGIN>
+    (<EOL> | <WS>)*
+    (content())+
+    <VCEND>
+    (<EOL> | <WS>)*
+    <EOF>
+    {
+        listener.end();
+    }
+}
+
+void content() :
+{Token group=null;}
+{
+    LOOKAHEAD(2)
+
+    [group=<IDENTIFIER> "."] property(group)
+    |
+    notImplemented()
+}
+
+// All properties we do not implement, but are willing to parse.
+// We simply ignore them as allowed by the standard.
+void notImplemented() :
+{
+    Token identifier;
+}
+{
+    identifier=<IDENTIFIER>
+    params()
+    colon()
+    text()
+    <EOL>
+    {
+    }
+}
+
+void property(Token group) :
+{}
+{
+      version(group)
+    | title(group)
+    | name(group)
+    | mail(group)
+    | tel(group)
+    | fname(group)
+    | organization(group)
+    | address(group)
+    | role(group)
+    | url(group)
+    | rev(group)
+    | nickname(group)
+    | birthday(group)
+    | label(group)
+    | timezone(group)
+    | logo(group)
+    | note(group)
+    | uid(group)
+    | photo(group)
+    | folder(group)
+    | anniversary(group)
+    | children(group)
+    | companies(group)
+    | languages(group)
+    | manager(group)
+    | mileage(group)
+    | spouse(group)
+    | subject(group)
+    | categories(group)
+    | freebusy(group)
+    | accessClass(group)
+    | geo(group)
+    | mailer(group)
+    | impp(group)
+    | agent(group)
+    | prodid(group)
+    | key(group)
+    | extension(group)
+}
+
+void categories(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <CATEGORIES>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setCategories(content, plist, group);
+    }
+}
+
+void extension(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+    Token xtagName  = null;
+}
+{
+    xtagName = <EXTENSION>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.addExtension(xtagName.image, content, plist, group);
+    }
+}
+
+void version(Token group) :
+{
+    Token ver;
+    ParamList plist = null;
+}
+{
+    <VERSION>
+    plist = params()
+    colon()
+    ver=<CONTENTSTRING>
+    <EOL>
+    {
+        listener.setVersion(ver.image, plist, group);
+    }
+}
+
+void title(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <TITLE>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setTitle(content, plist, group);
+    }
+}
+
+void mail(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <EMAIL>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setMail(content, plist, group);
+    }
+}
+
+void url(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <URL>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setUrl(content, plist, group);
+    }
+}
+
+void tel(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <TEL>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setTelephone(content, plist, group);
+    }
+}
+
+void fname(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <FN>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setFName(content, plist, group);
+    }
+}
+
+void role(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <ROLE>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setRole(content, plist, group);
+    }
+}
+
+void rev(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <REV>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setRevision(content, plist, group);
+    }
+}
+
+void nickname(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <NICKNAME>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setNickname(content, plist, group);
+    }
+}
+
+void organization(Token group) :
+{
+    ParamList plist  = null            ;
+    String content   = null            ;
+}
+{
+    <ORG>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setOrganization(content, plist, group);
+    }
+}
+
+void address(Token group) :
+{
+    ParamList plist  = null            ;
+    String content   = null            ;
+}
+{
+    <ADR>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setAddress(content, plist, group);
+    }
+}
+
+void birthday(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <BDAY>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setBirthday(content, plist, group);
+    }
+}
+
+void label(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <LABEL>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setLabel(content, plist, group);
+    }
+}
+
+void timezone(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <TZ>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setTimezone(content, plist, group);
+    }
+}
+
+void logo(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <LOGO>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setLogo(content, plist, group);
+    }
+}
+
+void note(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <NOTE>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setNote(content, plist, group);
+    }
+}
+
+void uid(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <UID>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setUid(content, plist, group);
+    }
+}
+
+void photo(Token group) :
+{
+    ParamList plist  = null            ;
+    String content   = null            ;
+    FieldsList flist = new FieldsList();
+}
+{
+    <PHOTO>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setPhoto(content, plist, group);
+    }
+}
+
+void name(Token group) :
+{
+    ParamList plist  = null            ;
+    String content   = null            ;
+}
+{
+    <N>
+    plist = params()
+    colon()
+    content =text()
+    <EOL>
+    {
+        listener.setName(content, plist, group);
+    }
+}
+
+void folder(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <FOLDER>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setFolder(content, plist, group);
+    }
+}
+
+void freebusy(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <FBURL>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setFreebusy(content, plist, group);
+    }
+}
+
+void anniversary(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <ANNIVERSARY>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setAnniversary(content, plist, group);
+    }
+}
+
+void children(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <CHILDREN>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setChildren(content, plist, group);
+    }
+}
+
+void companies(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <COMPANIES>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setCompanies(content, plist, group);
+    }
+}
+
+void languages(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <LANGUAGES>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setLanguages(content, plist, group);
+    }
+}
+
+void manager(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <MANAGER>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setManager(content, plist, group);
+    }
+}
+
+void mileage(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <MILEAGE>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setMileage(content, plist, group);
+    }
+}
+
+void spouse(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <SPOUSE>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setSpouse(content, plist, group);
+    }
+}
+
+void subject(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <SUBJECT>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setSubject(content, plist, group);
+    }
+}
+
+void accessClass(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <CLASS>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setAccessClass(content, plist, group);
+    }
+}
+
+void geo(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <GEO>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setGeo(content, plist, group);
+    }
+}
+
+void mailer(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <MAILER>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setMailer(content, plist, group);
+    }
+}
+
+void impp(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <IMPP>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setIMPP(content, plist, group);
+    }
+}
+
+void agent(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <AGENT>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setAgent(content, plist, group);
+    }
+}
+
+void prodid(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <PRODID>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setProductID(content, plist, group);
+    }
+}
+
+void key(Token group) :
+{
+    ParamList plist = null;
+    String content  = null;
+}
+{
+    <KEY>
+    plist=params()
+    colon()
+    content=text()
+    <EOL>
+    {
+        listener.setKey(content, plist, group);
+    }
+}
+
+// --------------------------- SERVICE BNF EXPANSIONS --------------------------
+
+/**
+ * Parses property parameters and returns a ParamList with the generated Tokens.
+ * Example: in TEL;WORK;VOICE;CHARSET=ISO-8859-8:+1-800-555-1234 will parse the
+ * ";WORK;VOICE;CHARSET=ISO-8859-8:" part and return a list containing "WORK"
+ * and "VOICE" as types, and "ISO-8859-8" as charset.
+ *
+ * @return the list of parameters
+ */
+ParamList params() :
+{
+    ParamList paramList = new ParamList();
+    Token paramName = null, paramValue = null;
+}
+{
+    (
+        (
+          <SEMICOLON>
+         |
+          <SEMICOLON_QP>
+        )
+        paramName=<PARAMSTRING> (<EQUAL> paramValue=<PARAMSTRING>)?
+        {
+            paramList.add(paramName.image, (paramValue == null) ? null : paramValue.image);
+        }
+      |
+        <QUOTED_PRINTABLE>
+        {
+            paramList.add("ENCODING", "QUOTED-PRINTABLE");
+        }
+    )*
+    {
+        return paramList;
+    }
+}
+
+/**
+ * Parses the fields of a property value and returns a StringBuffer with text after ":".
+ * The single element comma separated are retrieved by function in FieldsList class
+ *
+ * @return the list of fields
+ */
+String text() :
+{
+    Token t = null;
+    StringBuffer sb = new StringBuffer();
+}
+{
+  (
+    (
+      <SEOL>
+     |
+      t = <CONTENTSTRING> { sb.append(t.image); }
+    )+
+   |
+    (
+      <SEOL_QP>
+     |
+       t = <CONTENTSTRING_QP> { sb.append(t.image); }
+     |
+       t = <NONBREAKINGEQUALS> { sb.append(t.image); }
+    )+
+  )?
+  {
+         return sb.toString();
+  }
+}
+
+void colon() :
+{
+
+}
+{
+   ( <COLON> | <COLON_QP> )
+}
+
+// -------------------------------------  TOKENS  ------------------------------
+
+<DEFAULT, CONTENTSTATE, CONTENTSTATE_QP>
+TOKEN :
+{
+    // "\n" alone is accepted for compatibility's sake
+    <EOL : ("\r\n" | "\n")+ > : DEFAULT
+}
+
+<CONTENTSTATE>
+TOKEN :
+{
+    // soft EOL
+    <SEOL : (("\r\n" | "\n")+ " ") > : CONTENTSTATE
+}
+
+<CONTENTSTATE_QP>
+TOKEN :
+{
+    // soft EOL
+    <SEOL_QP : ("=\r\n" | "=\n") > : CONTENTSTATE_QP
+}
+
+<PARAMSTATE, DEFAULT>
+TOKEN :
+{
+    <COLON : ":" > : CONTENTSTATE
+}
+
+<PARAMSTATE_QP>
+TOKEN :
+{
+    <COLON_QP : ":" > : CONTENTSTATE_QP
+}
+
+<DEFAULT, PARAMSTATE>
+TOKEN :
+{
+    <SEMICOLON : ";" > : PARAMSTATE
+}
+
+<PARAMSTATE_QP>
+TOKEN :
+{
+    <SEMICOLON_QP : ";" >
+}
+
+
+<DEFAULT, PARAMSTATE, PARAMSTATE_QP>
+TOKEN :
+{
+    <EQUAL : "=" >
+}
+
+// DEFINITION OF KNOWN TOKEN
+<DEFAULT>
+TOKEN :
+{
+    <CATEGORIES : "CATEGORIES">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <VERSION : "VERSION">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <TITLE : "TITLE">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <NICKNAME : "NICKNAME">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <EMAIL : "EMAIL">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <FN : "FN">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <ORG : "ORG">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <BDAY : "BDAY">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <PHOTO : "PHOTO">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <ADR : "ADR">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <UID : "UID">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LABEL : "LABEL">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <ROLE : "ROLE">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <TZ : "TZ">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <LOGO : "LOGO">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <NOTE : "NOTE">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <URL : "URL">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <N : "N">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <REV : "REV">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <TEL : "TEL">
+}
+<DEFAULT>
+TOKEN :
+{
+    <FBURL : "FBURL">
+}
+<DEFAULT>
+TOKEN :
+{
+    <CLASS : "CLASS">
+}
+<DEFAULT>
+TOKEN :
+{
+    <GEO : "GEO">
+}
+<DEFAULT>
+TOKEN :
+{
+    <MAILER : "MAILER">
+}
+<DEFAULT>
+TOKEN :
+{
+    <IMPP : "IMPP">
+}
+<DEFAULT>
+TOKEN :
+{
+    <AGENT : "AGENT">
+}
+<DEFAULT>
+TOKEN :
+{
+    <PRODID : "PRODID">
+}
+<DEFAULT>
+TOKEN :
+{
+    <KEY : "KEY">
+}
+<DEFAULT>
+TOKEN :
+{
+    <FOLDER : "X-FUNAMBOL-FOLDER"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <ANNIVERSARY : "X-ANNIVERSARY"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <CHILDREN : "X-FUNAMBOL-CHILDREN"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <COMPANIES : "X-FUNAMBOL-COMPANIES"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <LANGUAGES : "X-FUNAMBOL-LANGUAGES"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <MANAGER : "X-MANAGER"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <MILEAGE : "X-FUNAMBOL-MILEAGE"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <SPOUSE : "X-SPOUSE"> // Must be before <EXTENSION>
+}
+<DEFAULT>
+TOKEN :
+{
+    <SUBJECT : "X-FUNAMBOL-SUBJECT"> // Must be before <EXTENSION>
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <VCBEGIN : "BEGIN" (<WS>)? ":" (<WS>)? "VCARD">
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <VCEND : "END" (<WS>)? ":" (<WS>)? "VCARD" >
+}
+
+<DEFAULT>
+TOKEN : {
+    <EXTENSION: ["X", "x"] "-" (~["\r","\n",":", ";"])+>
+}
+
+<CONTENTSTATE>
+TOKEN :
+{
+    <CONTENTSTRING : (~["\r","\n"])+ >
+}
+
+<CONTENTSTATE_QP>
+TOKEN :
+{
+    <CONTENTSTRING_QP : (~["\r","\n","="])+ >
+|   <NONBREAKINGEQUALS : "=" >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    <WS : (" " | "\t")+ >
+}
+
+<PARAMSTATE, PARAMSTATE_QP, DEFAULT>
+TOKEN :
+{
+    <QUOTED_PRINTABLE : (";ENCODING=QUOTED-PRINTABLE" | ";QUOTED-PRINTABLE") > : PARAMSTATE_QP
+}
+
+<PARAMSTATE, PARAMSTATE_QP>
+TOKEN :
+{
+    <PARAMSTRING : (~[ ":" , "\r" , "\n" , ";" , "\t" , "=" , "[" , "]" ])+ >
+}
+
+<DEFAULT>
+TOKEN :
+{
+   <IDENTIFIER : ["a"-"z", "A"-"Z"] (["-", "a"-"z", "A"-"Z", "0"-"9"])* >
+}
+

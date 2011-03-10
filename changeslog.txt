@@ -1,0 +1,321 @@
+Changes log for the Funambol Android client.
+--------------------------------------------
+2010-12-21
+  - maria: Release 9.0.1
+
+2010-12-15
+  - Fixed bug #10376 (do not prefill phone number in signup screen and added
+    hint for its value)
+
+2010-12-07
+  - Fixed bug #10424 (Client crashes on Galaxy S Mesmerize when editing
+    contacts)
+
+2010-11-16
+ - Fixed bug #10184 (A sync triggered by the OS blocks client usage on Galaxy S)
+ 
+2010-11-08
+ - Fixed bug #10218 ('Go to Calendars' command does not work on HTC Incredible)
+ - Fixed bug #10061 ('Go to Contacts' command does not work on Samsung Galaxy)
+
+2010-11-04
+ - Fixed bug #10286 (Android Sync Client - URL mapping is incorrect)
+ 
+2010-10-27
+  - Introduced Mobile Sign Up feature with CAPTCHA validation
+  - New Login screen UI consistent to the new Sign Up screen
+  - Introduced Logout feature (the account settings tab has been removed)
+  - Fixed bug #8969 (The Home screen is not correctly refreshed after cancelling
+    the first sync warning)
+
+2010-10-22
+  - Fixed bug 10248 (Pictures sync source no longer works).
+
+2010-10-19
+  - Improvement: changed the main screen UI in case a single source is available
+    (US6260)
+  - Disabled video sync source
+
+2010-09-12
+  - Added experimental support to sync Astrid tasks. The feature is disabled by
+    default, but the code is ready.
+
+2010-08-23
+  - Fixed bug #9952 (Android Sync Client - if device is turn off, information 
+    about sync direction is loss)
+    
+2010-08-17
+  - Added dependency with joda-time library version 1.6
+
+2010-08-16
+  - Added a custom key value store whose key is an integer for improved
+    performance (the StringKeyValueStore in the API was generalized to operate
+    on string keys)
+
+2010-08-04
+  - Added Bandwidth Saver to sync Media over wifi only (us5912)
+  
+2010-08-04
+  - Added video synchronization feature (US6148)
+
+2010-08-03
+  - Moved "import" function into the advanced settings screen.
+  - Sync and import are now mutually exclusive.
+
+2010-07-23
+  - Introduced new "Import contacts" funcionality which allows the user to import contacts 
+    belonging to other accounts to the Funambol one, every time he changes his credentials, 
+    including the first login.
+
+2010-07-20
+  - Fixed bug #9754 (Android sync client - address book label customization)
+
+2010-07-16
+  - Fixed bug #9722 (Sometimes is impossible to access options if automatic sync
+    is on). Work done as per US6050.
+
+2010-07-13
+  - Fixed bug #9710 (Aggregated contacts cannot be edited)
+  - Fixed bug #9719 ( OS Android 2.2: creation of a 'new contact' is confused
+    because user must choose the account where to memorize contacts twice
+    instead one (as in Android 2.1). Because of a change in the Android API we
+    cannot have the same behavior, and we made a behavioral change according to
+    US 6036.
+
+2010-07-09
+  - Fixed bug #9711 (Picture syncsource not disabled after OS push notification in a Quota exceeded situation)
+    Work as per US6030
+
+2010-07-08
+  - Fixed bug #9718 (\'Sync Source\' and \'Go to Source\' pop-up options could not work as expected
+    on Nexus    2.2)
+
+2010-07-01
+  - Fixed bug #9175 (in funambol contacts missing fields birthday and anniversary)
+
+2010-06-30
+  - Fixed bug #9662 (Impossible to login and access options if automatic sync is on)
+
+2010-06-25
+  - Calendar Sync source enabled. Related services were enabled accordingly on the 
+    manifest file both on the application ant on the integration tests suite.
+
+2010-06-23
+  - Fixed bug #9612 (Wrong text description for the Reset command)
+  - Fixed bug #9591 (Contacts fast sync: duplicate items when canceled or interruped sync)
+
+2010-06-21
+  - Media sync source refactored: the MediaUtility Class was removed in place of the MediaDescriptor class.
+    This avoid code duplication issue. 
+  - The size of pictures froim the MediaStore provider was wrong. Now it is read form FS using the fileadapter.
+  - The date modified sent to the server was wrongly determined as it was not a timestamp but an amount of seconds
+    to be multiplied x 1000 in order to be reduced to the correct timestamp.
+  - The MediaStore provider properties are now taken the the right format
+  - The affected classes were modified.  
+
+2010-06-10
+  - Added status message on the picture sync source for server storage quota full.
+  - Added timed toast capability: now every toast can be timed with a given 
+    amount of milliseconds
+
+2010-06-10
+  - Introduced client to server push feature. Local changes of Contacts and Pictures
+    are automatically pushed to the server within 30 seconds. It is completely integrated 
+    with the Android auto sync funcionality.
+
+2010-06-09
+  - Fixed bug #9481 (reset pictures, warning message about quota on server is
+    reached is diplayed only first time)
+
+2010-06-04
+  - Fixed bug #9468 (when Quota is reached, if reboot device client send all pictures)
+
+2010-05-28
+  - Added CalendarManager base implementation (no recurrences)
+
+2010-05-21
+  - Fixed bug #9399 (Interrupted resets do not force a slow sync)
+  - Added http based picture sync (US4678 and US4676)
+
+2010-04-27
+  - Fixed bug #9129 (Pictures sync fails on HTC Legend)
+
+2010-04-08
+  - Fixed bug #9103 (Funambol Sync Client in HTC Legend, no sync pictures)
+  - Fixed bug #9104 (Funambol Sync Client in HTC Legend, application crash if I try to add 
+    contact in other account)
+  - Fixed bug #9106 (Funambol Sync Client in HTC Legend, icons color are not clear)
+
+2010-02-24
+  - Fixed bug #9010 (change account in invalid account, restore old account: after sync, all 
+    contacts are dropped)
+
+2010-03-16
+  - Fixed bug #8885 (schedule, warning message about pictures some times is not 
+    displayed and some times sync pictures not start)
+
+2010-03-15
+  - Fixed bug #8925 (when remove Funambol account, if I try to add a contact UI display error 
+    window message)
+
+2010-03-10
+  - Fixed bug #8863 (when turn-off Wi-Fi, application not responding without warning message)
+
+2010-03-09
+  - Fixed bug #8811 (Settings, Sync tab: incorrect label)
+  - Fixed bug #8823 (incorrect label)
+  - Fixed bug #8817 (Settings, Sync tab - when sync is running, save option is not disabled)
+  - Fixed bug #8818 (Settings, Account tab - when sync is running, save option is not disabled)
+
+2010-03-05
+  - Fixed bug #8812 (Schedule - incorrect behavior)
+  - Fixed bug #8697 (Save contact generate sometimes crash in application)
+  - Fixed bug #8856 ('Go to' commands not working)
+  - Fixed bug #8847 (Istant Messanger field, no correct mapping, lose field)
+  - Fixed bug #8843 (fields personal web site, other web site: no correct mapping)
+  - Fixed bug #8854 (Organization, field Office location is not added in VCard)
+
+2010-03-04
+  - Fixed bug #8825 (reset contacts from server to device, incorrect behavior)
+
+2010-02-25
+  - The reset cannot be run if a sync is in progress (a user friendly message is 
+    displayed in that case). 
+  - The scheduled sync was enforced when the device is standing-by using the 
+    android alarm manager service.
+  - Performing a cancel using the phisical android key on the last first sync 
+    popup didn't change the "Sync All" button label. FIXED
+
+2010-02-24
+  - Added support for managing quota errors (US4133)
+  - Disable access to the configuration when a sync is running
+  - Reset synchronizations are now part of native syncs
+
+2010-02-23
+  - Keep the native account name to be the same as the funambol one. After the 
+    the account information change, all of the funambol contacts are replaced 
+    with contacts coming from the new account.
+  - Reset popup is now only shown when a sync is not in pregress. A warning 
+    message is shown otherwise 
+  
+2010-02-18
+  - Added support for scheduled sync (work done as part of US3284)
+
+2010-02-05
+  - Added Activity for editing contacts. The user interface is the same as the 
+    native contacts application.
+
+2010-02-03
+  - Resolved issues with custom dialog (Reset and first sync) that broke the
+    application in case of screen rotation. The logic was implemented outside 
+    the normal Android alert dialog basic pattern management: it relies on the
+    activity that creates the dialog, in particular on the onCreate and 
+    onSaveInstanceState methods. The DialogController interface was enhanched to
+    control the alert resume logic.
+
+2010-02-01
+  - Reset feature fully implemented.
+  - AppSyncSourceManager returns the sources vector sorted per UISourceId in 
+    order to avoid starnge behavior on the client.
+
+2010-01-30
+  - One more step of refactoring to move into the direction of componentized
+    application source (worked mostly on the settings section)
+  - Improved the way native sessions are attached/detached
+  - Changed picture settings (removed location and added sync older)
+
+2010-01-27
+  - The client was modified to be linked with the new client API dialog 
+    interface
+
+2010-01-27
+  - Pictures sync is now a source available to the native sync via a proper
+    SyncAdapter and ContentProvider. The client also triggers pictures sync via
+    the SyncAdapter so that the sync can be performed in background.
+
+2010-01-26
+  - Updated version to 8.5
+
+2010-01-26
+  - Merged the latest changes made to the BB sync client on pictures sync (quota
+    handling, first sync warning message, backward compatibility)
+
+2010-01-16
+  - First implementation of pictures sync (still missing various
+    functionalities)
+
+2010-01-12
+  - Use platform standard support for icon animations when a sync is in progress
+
+2009-12-23
+  - Fixed bug #8389 (impossible to manually delete a contact with no name synced from server)
+
+2009-12-07:
+  - Merged US3282 which is the first re-implementation of the contact sync
+    source for Android 2.0 devices. All fields are currently supported and the
+    sync speed is good. This version does not implement a good handling of
+    Accounts, which is yet to come.
+    Support for 1.x devices is currently disabled (even though the Manifest does
+    not require 2.0 yet)
+
+2009-12-02:
+  - The FunambolClient class now can log into file.
+    The file will be sent by email if needed. The related
+    interface was added and the basic test performed on the real
+    device. The android manifest changed in order to give the
+    permission to read and write user data.
+   
+2009-06-12:
+  - included PIM module from the Funambol JME SDK
+    changed the Contact parsing to use the API vCard parser
+    renamed the externals directory from funambol_sdk to
+    externals/jme-sdk
+
+2008-10-27:
+  - update for T-Mobile G1 menu icons added code review
+
+2008-10-02:
+  - update for android sdk 1.0
+
+2008-03-11:
+  - retrieving modified items improved
+
+2008-02-21:
+  - back and menu buttons disabled during sync
+
+2008-02-20:
+  - porting to the android m5 sdk
+
+2008-01-12:
+  - last sync datetime added on UI
+
+2008-01-03:
+  - Src zip builder added: run 'ant forge'
+
+2007-12-29: 
+  - layout style fields moved to styles.xml code review
+
+2007-12-27:
+  - sync all button added
+    
+2007-12-22:
+  - sync arrows added
+    
+2007-12-21:
+  - UI improved
+   
+2007-12-19:
+  - HashManager added, for retrieving modified items
+    
+2007-12-15:
+  - Add emails and postal addresses sync
+
+2007-12-13:
+  - First Contacts sync
+
+2007-12-08:
+  - java.logging used for logs.
+
+2007-12-06:
+  - First android client
+

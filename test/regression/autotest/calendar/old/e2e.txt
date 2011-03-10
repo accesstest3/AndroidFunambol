@@ -1,0 +1,7 @@
+BeginTest("Calendar Regression");
+
+Include("c2s.txt");
+Include("c2s_reminder.txt");
+Include("s2c.txt");
+
+EndTest();

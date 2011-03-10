@@ -1,0 +1,38 @@
+BeginTest("Calendar Recurrences C2S");
+
+# Daily events
+Include(daily_noend.txt);
+Include(daily_noend_allday.txt);
+Include(daily_enddate.txt);
+Include(daily_enddate_allday.txt);
+
+# Weekly events
+Include(weekly_noend.txt);
+Include(weekly_noend_allday.txt);
+Include(weekly_enddate.txt);
+Include(weekly_enddate_allday.txt);
+Include(weekly_wkd_noend.txt);
+Include(weekly_wkd_noend_allday.txt);
+Include(weekly_wkd_enddate.txt);
+Include(weekly_wkd_enddate_allday.txt);
+
+# Monthly events
+Include(monthly_noend.txt);
+Include(monthly_noend_allday.txt);
+Include(monthly_enddate.txt);
+Include(monthly_enddate_allday.txt);
+Include(monthly_enddate_allday_multidays.txt);
+Include(monthly_enddate_multidays.txt);
+Include(monthly_nth_noend.txt);
+Include(monthly_nth_noend_allday.txt);
+Include(monthly_nth_enddate.txt);
+Include(monthly_nth_enddate_allday.txt);
+
+# Yearly events
+Include(yearly_noend.txt);
+Include(yearly_noend_allday.txt);
+Include(yearly_enddate.txt);
+Include(yearly_enddate_allday.txt);
+
+EndTest();
+

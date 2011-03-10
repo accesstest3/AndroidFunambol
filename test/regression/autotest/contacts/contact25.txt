@@ -1,0 +1,58 @@
+#SyncContacts25
+#----On Device modify one record and delete one record in the Contacts section / Sync----
+
+BeginTest("On Device modify one record and delete one record in the Contacts section / Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Luca Bianchi, Pallino Pinko) and do a fast sync
+Include(contact16.txt);
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Giuseppe","Rossi");
+SetContactField(DisplayName,"RossiG");
+SetContactField(MiddleName,"m");
+SetContactField(PrefixName,"p");
+SetContactField(SuffixName,"s");
+SetContactField(NickName,"GiuseppeRossi");
+SetContactField(TelHome,"345544563");
+SetContactField(TelWork,"52425235");
+SetContactField(TelOther,"522456345");
+SetContactField(TelOther2,"24562456");
+SetContactField(TelCell,"1346245616");
+SetContactField(TelPager,"541245351");
+SetContactField(TelFaxHome,"232456143");
+SetContactField(TelFaxWork,"1224563414");
+SetContactField(TelCompany,"13245641423");
+SetContactField(TelOtherFax,"542456351");
+SetContactField(EmailHome,"giusepperossi@gmail.com");
+SetContactField(EmailWork,"giusepperossi@work.com");
+SetContactField(EmailOther,"giusepperossi@other.com");
+SetContactField(Organization,"Funambol;Test");
+SetContactField(Im,"giuseppe.rossi@yahoo.com");
+SetContactField(AddressHome,"post1;via 1;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post1;via 2;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post1;via 3;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sitositosito");
+SetContactField(Anniversary,"1999-07-14");
+SetContactField(Children,"Gianluca,Mario");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota di Giuseppe Rossi");
+SaveContact();
+
+#Delete Contact On Device Side
+DeleteContact("Luca","Bianchi");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,1,0,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is updated on Server
+CheckUpdatedContactOnServer("Giuseppe","Rossi",true);
+
+#Verify if the contact is deleted on Server
+CheckDeletedContactsOnServer("Luca","Bianchi",true);
+EndTest();

@@ -1,0 +1,26 @@
+#SyncContacts41
+#----Delete all records from Contacts section on server side / Slow Sync----
+
+BeginTest("Delete all records from Contacts section on server side / Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Delete all Contacts On Server Side
+DeleteContactOnServer("Giuseppe","Rossi");
+DeleteContactOnServer("Mario","Bianchi");
+DeleteContactOnServer("Carlo","Arancio");
+DeleteContactOnServer("Pallino","Pinko");
+
+RefreshServer(Contacts);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,0,0,0);
+EndTest();

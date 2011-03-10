@@ -1,0 +1,57 @@
+--------------------------
+Component Building HOW-TO
+--------------------------
+
+This file contains the instructions to build the source code provided with the zip package of the Java
+client SDK (these same instructions apply if the code is downloaded via SVN).
+
+Currently this package builds on the following platforms:
+
+1. Java MircoEdition (MIDP 2.0)
+
+--------------------------
+System Requirements
+--------------------------
+
+The system requirements depend on the target platform. The following ones are common to all platforms, while below
+there are the platform specific ones.
+
+    For all platforms:
+    - Download and install Apache Ant: http://ant.apache.org/ (version 1.7 is required)
+
+    For Java Micro Edition:
+    - Download and install Sun Java Wireless Toolkit: http://java.sun.com/products/sjwtoolkit/ (recommended version 2.5.2)
+    - Download and install Apache Antenna: http://antenna.sourceforge.net/ (recommended version 1.0.2)
+
+--------------------------
+Configuring the APIs
+--------------------------
+
+1. Unzip the package into your working directory
+2. Open (create if needed) a build.properties file in ~/funambol/build/<platform>/
+   (where platform is: me for Java MicroEdition
+                       bb for BlackBerry
+                       se for Java StandardEdition
+                       android for Android)
+   [the symbol '~' refers to the user home directory. On Windows system this is generally "Documents and Settings/<user>".
+    See the Java home.user variable for more details]
+
+The set of settings to apply depends on the platform.
+
+3.a For Java Micro Edition:
+    - WTK home on your environment
+      wtk.home=<wtk-home>
+      Example: wtk.home=C:/wtk2.5.2
+
+--------------------------
+Building the source
+--------------------------
+
+1. Open a shell and go to the directory <client/build/<platform>
+2. The "ant usage" command shows the list of available and buildable modules
+3. Type "ant build_<module>" to build one particular module (e.g. ant build_ipc)
+4. The build process generates the required jar file for the built component into the directory client/output/<module>
+
+In case of any problems with the build process, access the Funambol Community Forge Project  following this link: https://core.forge.funambol.org and contact Funambol for support.
+
+The Funambol Team

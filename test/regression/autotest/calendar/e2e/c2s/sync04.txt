@@ -1,0 +1,17 @@
+BeginTest("Sync04");
+
+Include(sync02.txt);
+
+# Update field from an event
+LoadEvent("sync02");
+SetEventField("Summary", "Sync04");
+SaveEvent();
+
+# Synchronize
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",0,1,0,0,0,0);
+
+EndTest();

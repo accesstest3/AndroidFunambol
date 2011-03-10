@@ -1,0 +1,60 @@
+# TestCase for Bug #9591 - Contacts fast sync: duplicate items when canceled or interruped sync
+
+BeginTest("Bug9591");
+
+Include(deleteall.txt);
+
+# Create 5 contacts on server
+CreateEmptyContactOnServer();
+SetContactField(FirstName, "Contact #1");
+SetContactField(LastName, "Test");
+SetContactField(TelHome, "1111111");
+SaveContactOnServer();
+CreateEmptyContactOnServer();
+SetContactField(FirstName, "Contact #2");
+SetContactField(LastName, "Test");
+SetContactField(TelHome, "2222222");
+SaveContactOnServer();
+CreateEmptyContactOnServer();
+SetContactField(FirstName, "Contact #3");
+SetContactField(LastName, "Test");
+SetContactField(TelHome, "3333333");
+SaveContactOnServer();
+CreateEmptyContactOnServer();
+SetContactField(FirstName, "Contact #4");
+SetContactField(LastName, "Test");
+SetContactField(TelHome, "4444444");
+SaveContactOnServer();
+CreateEmptyContactOnServer();
+SetContactField(FirstName, "Contact #5");
+SetContactField(LastName, "Test");
+SetContactField(TelHome, "5555555");
+SaveContactOnServer();
+RefreshServer("Contacts");
+CheckItemsCountOnServer("Contacts", 5);
+
+# Fire the synchronization 
+KeyPress(KeyFire);
+
+# Simulate sync cancelled after receiving the second item
+CancelSyncAfterPhase("Receiving", 2);
+
+# Wait the sync to complete
+WaitForSyncToComplete(6,120);
+Wait(5);
+
+# Check we received only 2 contacts
+CheckExchangedData("Contacts", 0, 0, 0, 2, 0, 0);
+CheckItemsCount("Contacts", 2);
+
+Wait(2);
+
+# Fire the synchronization 
+KeyPress(KeyFire);
+WaitForSyncToComplete(6,120);
+
+# Check there is no duplicates
+CheckExchangedData("Contacts", 0, 0, 0, 3, 0, 0);
+CheckItemsCount("Contacts", 5);
+
+EndTest();

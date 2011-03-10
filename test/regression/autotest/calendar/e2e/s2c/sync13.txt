@@ -1,0 +1,17 @@
+BeginTest("Sync13");
+
+Include(sync15.txt);
+
+DeleteAllEventsOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 120);
+
+CheckExchangedData("Calendar",0,0,0,0,0,3);
+CheckItemsCount("Calendar", 0);
+
+EndTest();

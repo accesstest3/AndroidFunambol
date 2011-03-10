@@ -1,0 +1,57 @@
+#SyncContacts37
+#----On server side modify all fields for the record in the Contacts section / Slow Sync----
+
+BeginTest("On server side modify all fields for the record in the Contacts section / Slow Sync") 
+
+#This include create a record of Contact (Mario Rossi) and do a slow sync
+Include(contact36.txt);
+
+#Load a Contact on Server side and modify all fields of this
+LoadContactOnServer("Mario","Rossi");
+SetContactField(DisplayName,"Marios");
+SetContactField(MiddleName,"amiddle");
+SetContactField(PrefixName,"aprefix");
+SetContactField(SuffixName,"asuffix");
+SetContactField(NickName,"aLucaBianchi");
+SetContactField(TelHome,"10382665765979");
+SetContactField(TelWork,"103824534");
+SetContactField(TelOther,"103821234");
+SetContactField(TelOther2,"103824598594");
+SetContactField(TelCell,"13445674");
+SetContactField(TelPager,"148756387");
+SetContactField(TelFaxHome,"167567");
+SetContactField(TelFaxWork,"176567");
+SetContactField(TelCompany,"11234");
+SetContactField(TelOtherFax,"1123144566");
+SetContactField(EmailHome,"aluca.bianchi@gmail.com");
+SetContactField(EmailWork,"aluca.bianchi@work.com");
+SetContactField(EmailOther,"aluca.bianchi@other.com");
+SetContactField(Birthday,"1987-10-13");
+SetContactField(Organization,"aFunambol;aTesting");
+SetContactField(Im,"aim@yahoo.com");
+SetContactField(AddressHome,"apost;avia Bricchetti;astreet;aMilano;aItaly;124356;acountry");
+SetContactField(AddressWork,"apost;avia Ferrata;astreet;aPavia;aItaly;123456;acountry");
+SetContactField(AddressOther,"apost;avia Ferrata;astreet;aPavia;aItaly;123456;acountry");
+SetContactField(Website,"ahttp://www.google.it/");
+SetContactField(WebsiteHome,"ahttp://www.unipv.it/");
+SetContactField(WebsiteWork,"ahttp://www.myfunambol.com/");
+SetContactField(Anniversary,"2008-12-14");
+SetContactField(Children,"afiglio1");
+SetContactField(Spouse,"aspouse");
+SetContactField(Title,"ai");
+SetContactField(Note,"aProva");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContactOnServer();
+
+RefreshServer(Contacts);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,1,0,0);
+EndTest();

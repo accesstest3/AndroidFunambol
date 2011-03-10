@@ -1,0 +1,20 @@
+BeginTest("Sync07");
+
+Include(sync01.txt);
+
+# Delete a field from a event on server
+LoadEventOnServer("Sync01");
+EmptyEventField(Location);
+SaveEventOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 120);
+
+CheckExchangedData("Calendar",0,0,0,0,1,0);
+CheckItemsCount("Calendar", 1);
+
+EndTest();

@@ -1,0 +1,65 @@
+#test list 4882_17
+BeginTest ("push23 - verified when c2s settings is disabled no push sync started");
+Include (push_change_c2s_setting.txt);
+
+#Add a contact
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+Wait(2);
+
+#Load a Contact on Device side and modify one field of this
+LoadContact("Test","Contact");
+SetContactField(EmailHome,"test.contact@universitàdipavia.it");
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 60);
+CheckExchangedData(Contacts, 0, 1, 0, 0, 0, 0);
+
+Wait(2);
+
+#Delete a contact
+DeleteContact(Test, Contact);
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 60);
+CheckExchangedData(Contacts, 0, 0, 1, 0, 0, 0);
+
+Wait(2);
+
+Include (push_change_c2s_setting.txt);
+
+#Add a contact
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts, false);
+
+#Load a Contact on Device side and modify one field of this
+LoadContact("Test","Contact");
+SetContactField(EmailHome,"test.contact@universitàdipavia.it");
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts, false);
+
+#Delete a contact
+DeleteContact(Test, Contact);
+Wait(2);
+CheckSyncPending(Contacts, false);
+
+DeleteAllContacts();
+KeyPress("KeyFire");
+WaitForSyncToComplete(Contacts, 5, 60);
+
+EndTest ();

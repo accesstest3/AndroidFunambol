@@ -1,0 +1,34 @@
+#testlist 4882_9, 4882_10, 4882_11
+BeginTest ("push 21 - test sync starts from add / update / delete contacts push");
+Include (push_change_c2s_setting.txt);
+
+#Add a contact
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+#Load a Contact on Device side and modify one field of this
+LoadContact("Test","Contact");
+SetContactField(EmailHome,"test.contact@universitàdipavia.it");
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 60);
+CheckExchangedData(Contacts, 0, 1, 0, 0, 0, 0);
+
+#Delete a contact
+DeleteContact(Test, Contact);
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 60);
+CheckExchangedData(Contacts, 0, 0, 1, 0, 0, 0);
+
+Include (push_change_c2s_setting.txt);
+
+EndTest();

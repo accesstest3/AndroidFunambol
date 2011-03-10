@@ -1,0 +1,60 @@
+#SyncContacts59
+#----On Device add one record and delete one record in the Contacts section / Slow Sync----
+
+BeginTest("On Device add one record and delete one record in the Contacts section / Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Luca Bianchi, Pallino Pinko) and do a fast sync
+Include(contact16.txt);
+
+#Create on Device side a new Contact (Carlo Arancio);
+CreateEmptyContact();
+SetContactField(DisplayName,"CarloA");
+SetContactField(FirstName,"Carlo");
+SetContactField(LastName,"Arancio");
+SetContactField(MiddleName,"mi");
+SetContactField(PrefixName,"pr");
+SetContactField(SuffixName,"suf");
+SetContactField(NickName,"CarloArancio");
+SetContactField(TelHome,"3562");
+SetContactField(TelWork,"45");
+SetContactField(TelOther,"45");
+SetContactField(TelOther2,"45");
+SetContactField(TelCell,"23");
+SetContactField(TelPager,"2434556");
+SetContactField(TelFaxHome,"134");
+SetContactField(TelFaxWork,"134");
+SetContactField(TelCompany,"134");
+SetContactField(TelOtherFax,"1345");
+SetContactField(EmailHome,"carlo.arancio@gmail.com");
+SetContactField(EmailWork,"carlo.arancio@work.com");
+SetContactField(EmailOther,"carlo.arancio@other.com");
+SetContactField(Birthday,"1936-08-11");
+SetContactField(Organization,"Funam;Tests");
+SetContactField(Im,"mario.bianchi@yahoo.com");
+SetContactField(AddressHome,"post;via 1;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via 2;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via 3;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sito1");
+SetContactField(WebsiteHome,"sito2");
+SetContactField(WebsiteWork,"sito3");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"Carletto");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Delete a Contact on Device side
+DeleteContact("Mario","Bianchi");
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,1,3,0);
+EndTest();

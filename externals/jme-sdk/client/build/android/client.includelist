@@ -1,0 +1,10 @@
+com/funambol/client/configuration/*
+com/funambol/client/customization/*
+com/funambol/client/ui/*
+com/funambol/client/source/*
+com/funambol/client/engine/*
+com/funambol/client/localization/*
+com/funambol/client/controller/*
+com/funambol/client/test/*
+com/funambol/client/sapi/*
+org/json/me/*

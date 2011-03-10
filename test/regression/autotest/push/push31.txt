@@ -1,0 +1,100 @@
+# test list 4882_21
+BeginTest ("push31 - After change account the c2s push settings must be preserved");
+
+# Enable c2s push setting
+Include (push_change_c2s_setting.txt);
+Wait(2);
+
+# Change Account settings
+# Enter settings screen
+KeyPress(KeyMenu);
+KeyPress(KeyLeft);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Goto Account tab
+KeyPress(KeyRight);
+Wait(1);
+
+# Fill username
+KeyPress(KeyDown);
+KeyPress(KeyDelete, 20);
+WriteString("fedeqa2");
+
+# Fill password
+KeyPress(KeyDown);
+KeyPress(KeyDelete, 20);
+WriteString("test");
+
+# Save settings
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Say ok to the dialog
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+
+# Wait authentication process
+WaitForAuthToComplete(5, 60);
+Wait(2);
+
+DeleteAllContacts();
+KeyPress(KeyFire);
+WaitForSyncToComplete(Contacts, 5, 60);
+
+# Verify that the c2s push is still enabled
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0123456789);
+SaveContact();
+Wait(2);
+CheckSyncPending(Contacts);
+WaitForSyncToComplete(Contacts, 30, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+# Restore c2s push setting
+Include (push_change_c2s_setting.txt);
+
+# Restore account setting
+# Enter settings screen
+KeyPress(KeyMenu);
+KeyPress(KeyLeft);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Goto Account tab
+KeyPress(KeyRight);
+Wait(1);
+
+# Fill username
+KeyPress(KeyDown);
+KeyPress(KeyDelete, 20);
+WriteString("fedeqa");
+
+# Fill password
+KeyPress(KeyDown);
+KeyPress(KeyDelete, 20);
+WriteString("test");
+
+# Save settings
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Say ok to the dialog
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+
+# Wait authentication process
+WaitForAuthToComplete(5, 60);
+Wait(2);
+
+EndTest();

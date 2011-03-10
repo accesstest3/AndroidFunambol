@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol Java Client API.
+================================================================================
+-->
+
+<project name="Funambol Java Client" default="build" basedir="../..">
+    <!-- Define the tasks. -->
+    <taskdef resource="antenna.properties"/>
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="${user.home}/funambol/build/me/build.properties"/>
+        <property file="build/common.properties"/>
+        <property file="build/me/build.properties"/>
+ 
+        <property name="dir.output"       value="${basedir}/output/me"/>
+        <property name="dir.classes"      value="${dir.output}/classes"/>
+        <property name="dir.src"          value="${basedir}/src"/>
+
+        <property name="dir.test"         value="${basedir}/test/src"        />
+        <property name="dir.test.classes" value="${basedir}/test/classes"    />
+        <property name="dir.res"          value="${basedir}/test/res"        />
+        <property name="dir.preproc.src"  value="${dir.output}/preproc_src"  />
+        <property name="dir.docs"         value="${basedir}/docs"            />
+        <property name="dir.tools"        value="${basedir}/../tools"        />
+        <property name="dir.html"         value="${dir.output}/html"         />
+
+        <!-- External libraries -->
+        <property name="lib.funambol.common" value="${basedir}/../common/output/me/funambol-j2me-common.jar"/>
+        <property name="lib.kxml"            value="${basedir}/../syncml/lib/kxml2-min-2.3.0.jar"/>
+        <property name="jsr75.jar"           value="${wtk.home}/lib/jsr75.jar"/>
+        <property name="wma.jar"             value="${wtk.home}/lib/wma11.jar"/>
+
+        <!-- Standard SDK runtime environment parameters -->
+        <property name="emu.device"           value="DefaultColorPhone"/>
+        <property name="emu.heapsize"         value="700K"/>
+        <property name="emu.wait"             value="true"/>
+        <property name="version"              value="${release.major}.${release.minor}.${build.number}"/>
+
+        <!-- WTK Definitions -->
+        <property name="wtk.home"                value="C://tools//WTK2.5.1" />
+        <property name="wtk.cldc.version"        value="1.0"/>
+        <property name="wtk.midp.version"        value="2.0"/>
+        <property name="wtk.optionalpda.enabled" value="false"/>
+        <property name="wtk.wma.enabled"         value="true"/>
+        <property name="wtk.debug"               value="false"/>
+
+        <!--
+        <property name="jad.filename"            value="CommonTest"/>
+        <property name="jar.filename"            value="CommonTest"/>
+        -->
+
+        <!-- External dependencies -->
+        <property name="classpath"               value="${jsr75.jar}"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        
+        <echo message=""/>
+        <echo message="Funambol Java Common API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage            --> help on usage"/>
+        <echo message=" build_[module]   --> builds the IPC module"/>
+        <echo message=" rebuild_[module] --> cleans and builds the project"/>
+        <echo message=" test_[module]    --> builds the test project"/>
+        <echo message=" docs_[module]    --> builds java-doc"/>
+        <echo message=" run_[module]     --> builds and runs the test project"/>
+        <echo message=" debug_[module]   --> builds and runs the test with debug active"/>
+        <echo message=" release_[module] --> build release packages"/>
+        <echo message=" clean_[module]   --> clean up the build directory"/>
+        <echo message=""/>
+        
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <echo message="Clean output tree ${dir.output}/${dir.module}"/>
+        <delete dir="${dir.output}/${dir.module}"/>
+        <delete>
+            <fileset dir="." includes="**/*.bak"/>
+        </delete>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="init, clean, build"/>
+
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="compile">
+        <!--======= Jar up everything ========-->
+        <echo message="Packaging library"/>
+        <jar destfile="${dir.output}/${module.name}.jar">
+            <fileset dir="${dir.classes}/${dir.module}" includes="**/*.class"/>
+        </jar>
+    </target>
+
+    <target name="compile" depends="init">
+        <mkdir dir="${dir.classes}"/>
+        <mkdir dir="${dir.classes}/${dir.module}"/>
+        <wtkbuild srcdir="${dir.src}/${dir.package}/${dir.module}" destdir="${dir.classes}/${dir.module}"
+              target="1.1" source="1.2" preverify="false" debug="${wtk.debug}"
+              listfiles="yes">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.kxml}"/>
+            </classpath>
+        </wtkbuild>
+    </target>
+
+    <target name="generate_test_suite" depends="init">
+       <taskdef name="testsuite" classname="com.funambol.testsuitegenerator.TestSuiteGenerator"
+                classpath="${dir.tools}/TestSuiteGenerator.jar" />
+
+       <testsuite srcdir="${basedir}/test/src/" destdir="${dir.test}/${dir.package}/${dir.module}"
+                  fjunit="true"/>
+    </target>
+
+    <target name="compile_test" depends="generate_test_suite, compile">
+        <mkdir dir="${dir.test.classes}/${dir.module}"/>
+        <wtkbuild srcdir="${dir.test}/${dir.package}/${dir.module}" destdir="${dir.test.classes}/${dir.module}"
+              target="1.1" source="1.2" preverify="false" debug="${wtk.debug}">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${dir.classes}/${dir.module}"/>
+                <pathelement location="${lib.junit}"/>
+                <pathelement location="${lib.kxml}"/>
+            </classpath>
+
+        </wtkbuild>
+    </target>
+ 
+    <!-- =============================================== -->
+    <!-- JME TEST                                        -->
+    <!-- =============================================== -->
+    <target name="test" depends="compile_test">
+
+        <mkdir dir="${dir.output}/${dir.module}"/>
+
+        <!-- Unpack the dependent packages -->
+        <unjar src="${lib.junit}" dest="${dir.test.classes}/${dir.module}"/>
+        <unjar src="${lib.funambol.common}" dest="${dir.test.classes}/${dir.module}"/>
+        <unjar src="${lib.kxml}" dest="${dir.test.classes}/${dir.module}"/>
+        <!--
+        <copy todir="${dir.classes}/res">
+            <fileset dir="${dir.res}" includes="*.properties" />
+            <fileset dir="${dir.res}" includes="*.txt" />
+        </copy>
+        -->
+        <!-- Create a JAD file. -->
+        <wtkjad jadfile="${dir.output}/${dir.module}/${jad.filename}.jad"
+            jarfile="${dir.output}/${dir.module}/${jar.filename}.jar"
+            name="ClientTest"
+            vendor="Funambol Inc."
+            version="${version}">
+
+            <midlet name="ClientTest" class="junit.framework.FunTestRunner"/>
+
+        </wtkjad>
+
+        <!-- Package everything. Most of the necessary information is
+         contained in the JAD file. Also preverify the result this
+         time. To obfuscate everything, set the corresponding
+         parameter to "true" (requires RetroGuard or ProGuard). The
+         version parameter increments the MIDlet-Version by one. -->
+
+        <wtkpackage jarfile="${dir.output}/${dir.module}/${jar.filename}.jar"
+            jadfile="${dir.output}/${dir.module}/${jad.filename}.jad"
+            obfuscate="false"
+            preverify="true" classpath="${lib.kxml};${lib.junit};${lib.funambol.common};${wma.jar}">
+
+            <!-- Package our newly compiled classes. -->
+            <fileset dir="${dir.classes}/${dir.module}" includes="**/*.class"/>
+            <fileset dir="${dir.test.classes}/${dir.module}" includes="**/*.class"/>
+
+            <!-- <fileset dir="${dir.classes}" includes="res/*.properties" /> -->
+            <!-- <fileset dir="${basedir}/test" includes="res/*.txt" /> -->
+
+        </wtkpackage>
+
+    </target>
+
+    <!-- =============================================== -->
+    <!-- RUN                                             -->
+    <!-- =============================================== -->
+    <target name="run" depends="init">
+        <!-- Start the MIDlet suite -->
+        <!--
+        <wtkrun jadfile="${dir.output}/${jad.filename}.jad"
+                device="DefaultColorPhone" wait="true">
+        </wtkrun>
+        -->
+        <exec executable="${wtk.home}/bin/emulator" spawn="false">
+            <arg value="-Xdevice:DefaultColorPhone"/>
+            <arg value="-Xheapsize:1M"/>
+            <arg value="-Xdescriptor:${dir.output}/${dir.module}/${jad.filename}.jad"/>
+            <arg value="-Xdomain:maximum"/>
+       </exec>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DEBUG                                           -->
+    <!-- =============================================== -->
+    <target name="debug" depends="init">
+        <!-- Start the MIDlet suite -->
+        <wtkrun jadfile="${dir.output}/${jad.filename}.jad"
+                device="DefaultColorPhone" wait="true" debug="5000">
+        </wtkrun>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <ant antfile="${basedir}/build/build.xml" target="docs">
+            <property name="dir.html"            value="${dir.html}"/>
+            <property name="dir.src"             value="${dir.src}"/>
+            <property name="lib.funambol.common" value="${lib.funambol.common}"/>
+            <property name="wtk.home"            value="${wtk.home}"/>
+            <property name="classpath"           value="${classpath}"/>
+            <property name="platform"            value="Java ME"/>
+        </ant>
+    </target>
+
+</project>

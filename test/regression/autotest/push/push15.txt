@@ -1,0 +1,47 @@
+#Referring to testlist 4882_24
+
+BeginTest("Test 4882_24 - adding and pushing 4 pictures (10 sec. interval)");
+
+# Enable device Auto Sync and client C2S push
+Include (push_change_c2s_setting.txt);
+Wait(2);
+
+#Add pictures, 10 seconds interval between
+AddPicture(test-picture-1.jpg);
+CheckSyncPending(Pictures);
+
+Wait(10);
+
+AddPicture(test-picture-2.jpg);
+CheckSyncPending(Pictures);
+
+Wait(10);
+
+AddPicture(test-picture-3.jpg);
+CheckSyncPending(Pictures);
+
+WaitForSyncPhase(Sending, 1, 30);
+
+AddPicture(test-picture-4.jpg);
+
+WaitForSyncToComplete(Pictures, 5, 180);
+CheckExchangedData(Pictures, 3, 0, 0, 0, 0, 0);
+
+WaitForSyncToComplete(Pictures, 10, 180);
+CheckExchangedData(Pictures, 1, 0, 0, 0, 0, 0);
+
+# Remove all the picture we added before and sync
+DeletePicture(test-picture-1.jpg);
+DeletePicture(test-picture-2.jpg);
+DeletePicture(test-picture-3.jpg);
+DeletePicture(test-picture-4.jpg);
+
+WaitForSyncToComplete(Pictures, 30, 180);
+CheckExchangedData(Pictures, 0, 0, 4, 0, 0, 0);
+
+Wait(2);
+Include (push_change_c2s_setting.txt);
+
+EndTest();
+
+

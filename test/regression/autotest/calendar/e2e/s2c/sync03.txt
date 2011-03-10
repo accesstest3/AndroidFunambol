@@ -1,0 +1,20 @@
+BeginTest("Sync03");
+
+Include(sync01.txt);
+
+# Update a field from a event on server
+LoadEventOnServer("Sync01");
+SetEventField(Location,"Pavia");
+SaveEventOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 120);
+
+CheckExchangedData("Calendar",0,0,0,0,1,0);
+CheckItemsCount("Calendar", 1);
+
+EndTest();

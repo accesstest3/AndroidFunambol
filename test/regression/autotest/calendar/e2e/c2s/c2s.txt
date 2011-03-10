@@ -1,0 +1,15 @@
+BeginTest("Calendar End2End C2S");
+
+#Include("sync02.txt");
+#Include("sync04.txt");
+#Include("sync08.txt");
+#Include("sync12.txt");
+#Include("sync14.txt");
+#Include("sync16.txt");
+#Include("sync19.txt");
+#Include("sync21.txt");
+#Include("sync23.txt");
+#Include("sync25.txt");
+#Include("sync27.txt");
+
+EndTest();

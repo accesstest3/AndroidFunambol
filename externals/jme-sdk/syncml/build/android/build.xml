@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol Java SyncML
+================================================================================
+-->
+<project name="Funambol Java SyncML" default="build" basedir="../..">
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="${user.home}/funambol/build/android/build.properties"/>
+        <property file="build/common.properties"/>
+        <property file="build/android/build.properties"/>
+
+        <property name="dir.src"          value="${basedir}/src"             />
+        <property name="dir.test"         value="${basedir}/test"            />
+        <property name="dir.res"          value="${basedir}/res"             />     
+        <property name="dir.output"       value="${basedir}/output/android"  />    
+        <property name="dir.preproc.src"  value="${dir.output}/preproc_src"  />
+        <property name="dir.docs"         value="${basedir}/docs"            />      
+        <property name="dir.output.html"  value="${dir.output}/html"         />
+        <property name="dir.classes"      value="${dir.output}/classes"      />
+        <property name="dir.tools"        value="${basedir}/../tools"        />
+        <property name="dir.html"         value="${dir.output}/html"         />
+
+        <!-- External dependencies -->
+        <property name="sdk-folder"  value="../android_sdk" />
+        <property name="android-jar" value="${sdk-folder}/android.jar" />
+
+        <property name="lib.funambol.common" value="${basedir}/../common/output/android/funambol-android-common.jar"/>
+        <property name="lib.kxml"            value="${basedir}/lib/kxml2-min-2.3.0.jar"/>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- COMPILE                                                             -->
+    <!-- Compile the files                                                   -->
+    <!-- ====================================================================-->
+    <!-- Compile sources -->
+    <target name="compile" depends="init">
+        <mkdir dir="${dir.classes}"/>
+    
+        <echo message="${lib.funambol.common}"/>
+
+        <javac srcdir="${dir.src}" destdir="${dir.classes}"
+              target="1.1" 
+              source="1.2" 
+              debug="${wtk.debug}" 
+              listfiles="yes">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.kxml}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <echo message="Clean output tree ${dir.output}"/>
+        <delete dir="${dir.output}"/>
+        <delete>
+            <fileset dir="." includes="**/*.bak"/>
+        </delete>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="compile">
+
+        <unjar src="${lib.kxml}" dest="${dir.classes}"/> 
+        <!--======= Jar up everything ========-->
+        <echo message="Packaging library"/>
+        <jar destfile="${dir.output}/${jar.name}.jar">
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+        </jar>
+    </target>
+
+    
+    <!-- =================================================================== -->
+    <!-- RELEASE                                                             -->
+    <!-- When a new release is created, the release.properties file is       -->
+    <!-- updated with the current date and incrementing the build number.    -->
+    <!-- ====================================================================-->
+    <target name="release_single">
+        <antcall target="compile_single"/>
+        <antcall target="docs"/> <!-- public javadocs for release -->
+        <zip zipfile="${dir.output}/${j2me.name}-${j2me.version}.zip">
+            <zipfileset dir="." includes="**/*" excludes="CVS/, **/nbproject/"/>
+        </zip>
+        
+    </target>
+
+
+    <!-- =============================================== -->
+    <!-- TEST                                            -->
+    <!-- =============================================== -->
+    <target name="compile_test" depends="init, compile">
+        <taskdef name="generatetestsuite" classname="com.funambol.testsuitegenerator.TestSuiteGenerator"
+                 classpath="${dir.tools}/TestSuiteGenerator.jar" />
+
+        <generatetestsuite srcdir="${dir.test}"
+                           destdir="${dir.test}">
+        </generatetestsuite>
+
+        <javac srcdir="${dir.test}" destdir="${dir.classes}"
+               target="1.1" source="1.2" debug="${wtk.debug}"
+               listfiles="yes">
+
+               <classpath>
+                   <pathelement location="${lib.junit}"/>
+                   <pathelement location="${lib.funambol.common}"/>
+                   <pathelement location="${lib.kxml}"/>
+               </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="init, compile, compile_test">
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <pathelement location="${lib.junit}"/>
+                <pathelement path="${dir.classes}"/>
+                <pathelement location="${lib.funambol.common}"/>
+               <pathelement location="${lib.kxml}"/>
+            </classpath>
+
+            <formatter type="plain"/>
+
+            <test name="FunTestSuite" haltonfailure="no"
+                  outfile="result">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <ant antfile="${basedir}/build/build.xml" target="docs">
+            <property name="dir.html"            value="${dir.html}"/>
+            <property name="dir.src"             value="${dir.src}"/>
+            <property name="lib.funambol.common" value="${lib.funambol.common}"/>
+            <property name="wtk.home"            value="${wtk.home}"/>
+            <property name="classpath"           value="${classpath}"/>
+            <property name="platform"            value="Java SE"/>
+        </ant>
+    </target>
+</project>
+

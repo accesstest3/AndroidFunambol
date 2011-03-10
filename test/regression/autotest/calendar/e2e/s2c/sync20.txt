@@ -1,0 +1,112 @@
+BeginTest("Sync20");
+
+Include(../deleteall.txt);
+
+# Create four events on the server. This is needed to have the update and the
+# delete
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_upd\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_del\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_upd2\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_del2\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyUp", 5);
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 120);
+
+# Now finalize the test
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_add\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_add2\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+DeleteEventOnServer(Sync18_del);
+DeleteEventOnServer(Sync18_del2);
+
+LoadEventOnServer(Sync18_upd);
+SetEventField("Summary", "Sync18_upd_modified");
+SaveEventOnServer();
+
+LoadEventOnServer(Sync18_upd2);
+SetEventField("Summary", "Sync18_upd2_modified");
+SaveEventOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyUp", 5);
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 120);
+
+CheckExchangedData("Calendar",0,0,0,2,2,2);
+
+CheckItemsCount("Calendar", 4);
+
+EndTest();

@@ -1,0 +1,225 @@
+Funambol J2ME Common API Changes Log
+------------------------------------
+
+2010-10-20
+  - Fixed bug in HttpConnectionAdapter for Android. In order to get stale
+    connections, we force the http keep alive system property to be false. This
+    cures weird network errors especially in https.
+
+2010-09-30
+  - Fixed bug in SocketAdapter that prevented sockets to be properly opened on
+    BlackBerry
+
+2010-09-17
+  - Added DeviceInfo utility to retrieve basic device information.
+
+2010-09-14
+  - Removed parts of code that did not logically belong to the API. In
+    particular:
+
+    *) advanced RMS storage support (such as NamedObjectStore)
+    *) Serializable interface (which makes cross platform support rather akward)
+    *) RMSAppender which is of very limited usage
+
+    All this code was primarly used by Funambol Email Client and it has moved
+    into its code.
+
+2010-08-31
+  - Added British Telecom in the list of autodetectable APNs
+
+2010-08-30
+  - Changed XmlUtil.getTagValue so that it now hanles CDATA section. CDATA is
+    removed when present. If no CDATA is present, the method performs XML
+    unescaping.
+
+2010-05-13
+  - Added APNs for arabic countries
+
+2010-05-13
+  - Added SocketAdapter to abstract sockect connections
+  - Changed CTPService to use the SocketAdapter and work on all platforms
+  - Added an implementation of HttpConnectionAdapter for ME platforms based
+    on HttpConnection. This is used by the TransportAgent until the
+    HttpConnectionAdapter based on sockets is reliable enough
+  - Removed the SE version of the HttpTransportAgent so that there is only one
+    HttpTransporAgent in the API and it uses HttpConnectionAdapter to handle
+    different platforms (US5061)
+
+2010-04-27
+  - Fixed bug #9221 (RMSAppender fails at deleting log db because it is not
+    closed)
+
+2010-04-14
+  - Added HttpConnectionAdapter to abstract http connections
+  - Added a method to the ConnectionManager to open abstract http connections
+
+2010-03-02
+  - Added a NonClosingObjectStore which forces object stores open
+  - Added logging context functionality
+
+2010-02-01
+  - Added convenience method to the Log to dump an error and its causing exception
+
+2009-12-17
+  - Added Methods to retrieve Blackberry System properties on the class BlackBerryUtils
+
+2009-12-07
+  - Changed the StringKeyValueStore interface and all its implementation. The
+    change is backward compatible, but the put method is now deprecated and new
+    items are now available
+  - Extended Log and Appender so that it is possible to retrieve the content of
+    the log. The content is described by a LogContent class.
+  - Added the Platform class for me and android common test src. This class
+    allows test to fetch system properties on different platforms and it is used
+    only for unit tests.
+
+2009-11-10
+  - Added Android unit test framework in common module.
+
+2009-10-02
+  - Changed Updater Url to: "/sapi/profile/client?action=get-update-info"
+  - Added recommendedUpdateAvailable() method to the UpdaterListener in order to distinguish 
+    between mandatory and recommended update.
+
+2009-09-25
+  - Fixed bug #7751 - Increase the timeout of the client waiting for a server response
+    Note: the behaviour is improved for some devices(work on BB OS 4.5 and Nokia Series 60 3ed)
+          in others (BB OS 4.2.1, BB OS 4.7, Nokia S40, SE, Sangung) still the same because
+          these devices always apply the default timeout for the connection
+2009-09-08
+    - Added utility methods in the Log to dump the class name and the message as
+      two separated strings
+
+2009-08-14
+    - Added support for authentication in the HttpTransportAgent (enhachment
+      contributed by MailTrust)
+
+2009-08-14
+    - Added method in FileAdapter to open files in readonly
+    - Added method in Base64 to encode streams
+
+2009-06-09
+    - Improved implementation of DateUtil date parsing by accepting more formats
+
+2009-04-28
+    - Merge of the portable branch. The following changes were made:
+    
+      - The APIs can now be build on Java ME, SE and
+         BB. Preliminary support for Android is also available.
+      - A new module with platform abstraction was created.
+      - Tests are JUnit 3.8 compatible and can run on both ME and SE.
+      - A StringKeyValueStore for RMS is now available.
+      - Most of the tools used to build these APIs are now bundled into the
+        tools directory
+
+2009-04-23
+    - Fix for bug #7085 (Connection cannot be established for BES users on BB).
+      This was part of US2197
+
+2009-08-04
+    - Added a SyncScheduler in the push module.
+
+2009-03-04
+    - Fix in the SyncManager and SyncListener to report the correct sync status
+      at the end of a sync (bug #6857)
+
+2009-02-11
+    - Chanegd the SyncListener codes to be compliant with the SyncSources status 
+      codes
+
+2009-01-28 (Countach)
+    - Fixed bug #6697 - Cannot connect with wap.vodafone.co.uk
+
+2009-01-23 (7.1.4)
+    - Merge of branch e_marcoct
+      - PIM subcomponent moved to its own module
+      - Added a MemoryAppender
+      - Added an AppProperties that allow applications to read jad parameters
+      - Added a KeyValueStore for strings
+
+2009-01-12 (7.1.2)
+    - Blackberry Connection Manager run in null pointer exception when the Connection 
+      Listener denied all of the available connection configuration. Now throws an
+      IOException returning the control to the caller.
+
+2008-12-23 (7.1.2)
+    - Fixed bug #6507 - BB JAM Client - Issues updating from 7.0.5 to 7.1.2
+
+2008-12-05 (7.1.2)
+    - Fixed bug #6467 (support for wap.vodafone.de)
+
+2008-11-14 (7.1.1)
+    - Fix in QuotedPrintable to use the proper encoding. This is part of US864 (bug #6025).
+
+2008-11-13 (7.1.1)
+    - WIFI introduced for Blackberry devices
+    - Connection framework changed
+
+2008-10-27 (7.1.0)
+    - Added FileAppender class
+    - Added new utility method to StringUtil to remove the port from a uri
+
+2008-10-27 (7.1.0)
+    - Added com.funambol.common.pim package with the implementation of
+      vCard parsing and formatting
+
+2008-10-13 (7.1.0)
+    - Changed part of the BlackberryStorage to allow clients to have their own
+      version of persistable objects. This is a bug fix as two applications
+      using the API must have different class names for objects implementing
+      Persistable, otherwise they get in conflict.
+
+2008-10-10 (7.1.0)
+    - Added CTPListener interface to listen on CTP status changes.
+
+2008-09-22 (7.1.0)
+    - Added UpdateManager component used to check if new versions of an
+      application are available (using Funambol protocol)
+
+2008-09-10
+    - Build system refactoring. BlackBerry tools are needed only when building
+      BB version. Different targets are available to choose between standard and
+      BB build (and similarly for unit testing)
+
+2007-11-08
+    - ChunkedString bug fixed: start index cannot be > end index
+
+2007-08-21
+    - ThreadPool changed to avoid having threads active in the background and
+      waiting for some work to do. Threads are spawned using the proper start
+      method and this also allows a proper GC of such thread objects.
+2007-06-12 (6.0.11)
+    - SyncMLStatus server msg get from data tag
+    - Workaround for cookies management in http server response
+
+2007-06-01 (6.0.10)
+    - Simplified exception scheme.
+    - Fixed bug in NamedObjeStore.getNextObject when the index is not
+      the first of the RecordEnumeration.
+
+2007-30-05  (6.0.10)
+    - J2ME Funambol Common API Documentation Updated
+
+2007-05-18 (6.0.9)
+    - Bug fixing on messages date management
+
+2007-05-11 (6.0.8)
+    - Handling of error 503 from server
+
+2007-04-03 (6.0.6)
+    - Improved memory handling
+    - Compress
+    - Thread priority reduced for lanched tasks
+    - Improved parser
+
+2007-02-27 (r_v6alpha)
+    - Bugfix in ObjectStore and NamedObjectStore
+    - decode(String, String) metho added to Base64
+    - Bigfix in MailDateFormatter
+    - Bugfix in RMSAppender
+
+2006-10-27
+    - First import on CVS. 
+    - Basic serialization and storage framework.
+    - Common utilities
+

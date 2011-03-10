@@ -1,0 +1,40 @@
+BeginTest("Sync27");
+
+Include(../deleteall.txt);
+
+# Prepare the test environment
+
+CreateEmptyEvent();
+SetEventField("Summary", "Sync19_del");
+SetEventField("Start", "20090113");
+SetEventField("End", "20090114");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+# Synchronize
+KeyPress(KeyUp, 5);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",1,0,0,0,0,0);
+
+# Now delete/upd/add
+CreateEmptyEvent();
+SetEventField("Summary", "Sync19_add");
+SetEventField("Start", "20090113");
+SetEventField("End", "20090114");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+DeleteEvent("Sync19_del");
+
+# Synchronize
+KeyPress(KeyUp, 5);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",1,0,1,0,0,0);
+
+EndTest();

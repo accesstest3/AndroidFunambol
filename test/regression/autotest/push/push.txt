@@ -1,0 +1,14 @@
+Include(push11.txt);
+Include(push12.txt);
+Include(push13.txt);
+Include(push14.txt);
+Include(push15.txt);
+Include(push21.txt);
+Include(push22.txt);
+Include(push23.txt);
+Include(push24.txt);
+Include(push25.txt);
+Include(push26.txt);
+
+#Fails (See bug #9463 - C2S push, when change account C2S setting is loss);
+#Include(push31.txt) 

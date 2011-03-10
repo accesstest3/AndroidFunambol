@@ -1,0 +1,529 @@
+/*
+ * Copyright (c) 2004 Harrie Hazewinkel. All rights reserved.
+ */
+
+/*
+ * Funambol is a mobile platform developed by Funambol, Inc.
+ * Copyright (C) 2003 - 2007 Funambol, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by
+ * the Free Software Foundation with the addition of the following permission
+ * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED
+ * WORK IN WHICH THE COPYRIGHT IS OWNED BY FUNAMBOL, FUNAMBOL DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT  OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301 USA.
+ *
+ * You can contact Funambol, Inc. headquarters at 643 Bair Island Road, Suite
+ * 305, Redwood City, CA 94063, USA, or at email address info@funambol.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Powered by Funambol" logo. If the display of the logo is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Powered by Funambol".
+ */
+
+options {
+    STATIC = false;
+    UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(ICalendarSyntaxParser)
+
+package com.funambol.common.pim.icalendar;
+
+import java.io.InputStreamReader;
+import java.util.*;
+import com.funambol.common.pim.*;
+
+public class ICalendarSyntaxParser {
+
+    private ICalendarSyntaxParserListener listener;
+
+    public void parse() throws ParseException {
+        listener.start();
+        try {
+            ICalendar();
+        } finally {
+            listener.end();
+        }
+    }
+
+    public void setListener(ICalendarSyntaxParserListener listener) {
+        this.listener = listener;
+    }
+
+}
+
+PARSER_END(ICalendarSyntaxParser)
+
+void ICalendar() : {
+}
+{
+    <BEGIN_VCAL_T>
+    <CRLF_T>
+    CalItems()
+    <END_VCAL_T>
+    ( <CRLF_T> )?
+    <EOF>
+}
+
+void CalItems() : {
+    ParserProperty property;
+}
+{
+    (
+        VEventItem()
+    |
+        VToDoItem()
+    |
+        VTimezoneItem()
+    |
+        try {
+            property=Property()
+            { listener.addProperty(property); }
+        } catch (ParseException e) {
+            System.out.println("Property ignored");
+        }
+    )*
+}
+
+void VEventItem() : {
+    ParserProperty property;
+}
+{
+    <BEGIN_VEVENT_T>
+    { listener.startEvent(); }
+    <CRLF_T>
+    (
+        property=XAlarmProperty()
+        { listener.addEventProperty(property); }
+    |
+        property=Property()
+        { listener.addEventProperty(property); }
+    |
+        VAlarmItem()
+        { listener.addAlarm(); }
+    )+
+    <END_VEVENT_T>
+    { listener.endEvent(); }
+    <CRLF_T>
+}
+
+void VToDoItem() : {
+    ParserProperty property;
+}
+{
+    <BEGIN_VTODO_T>
+    { listener.startToDo(); }
+    <CRLF_T>
+    (
+        property=XAlarmProperty()
+        { listener.addToDoProperty(property); }
+    |
+        property=Property()
+        { listener.addToDoProperty(property); }
+    |
+        VAlarmItem()
+        { listener.addAlarm(); }
+    )+
+    <END_VTODO_T>
+    { listener.endToDo(); }
+    <CRLF_T>
+}
+
+void VAlarmItem() : {
+    ParserProperty property;
+}
+{
+    <BEGIN_VALARM_T>
+    { listener.startAlarm(); }
+    <CRLF_T>
+    (
+        property=XAlarmProperty()
+        { listener.addAlarmProperty(property); }
+    |
+        property=Property()
+        { listener.addAlarmProperty(property); }
+    )+
+    <END_VALARM_T>
+    { listener.endAlarm(); }
+    <CRLF_T>
+}
+
+void VTimezoneItem() : {
+    ParserProperty property;
+}
+{
+    <BEGIN_VTIMEZONE_T>
+    { listener.startTimezone(); }
+    <CRLF_T>
+    (
+        try {
+            property=Property()
+            { listener.addTimezoneProperty(property); }
+        } catch (ParseException e) {
+            System.out.println("Property ignored");
+        }
+        |
+        standardc ()
+        { listener.addTimezoneStandardC(); }
+        |
+        daylightc ()
+        { listener.addTimezoneDayLightC(); }
+    )+
+    <END_VTIMEZONE_T>
+    { listener.endTimezone(); }
+    <CRLF_T>
+}
+
+void standardc () : {
+    ParserProperty property;
+}
+{
+    <BEGIN_STANDARDC_T>
+    { listener.startTimezoneStandardC(); }
+    <CRLF_T>
+    (
+        try {
+            property=Property()
+            { listener.addStandardCProperty(property); }
+        } catch (ParseException e) {
+            System.out.println("Property ignored");
+        }
+    )+
+    <END_STANDARDC_T>
+    { listener.endTimezoneStandardC(); }
+    <CRLF_T>
+}
+
+void daylightc () : {
+    ParserProperty property;
+}
+{
+    <BEGIN_DAYLIGHTC_T>
+    { listener.startTimezoneDayLightC(); }
+    <CRLF_T>
+    (
+        try {
+            property=Property()
+            { listener.addDayLightCProperty(property); }
+        } catch (ParseException e) {
+            System.out.println("Property ignored");
+        }
+    )+
+    <END_DAYLIGHTC_T>
+    { listener.endTimezoneDayLightC(); }
+    <CRLF_T>
+}
+
+ParserProperty Property() : {
+    Token name;
+    ArrayList parameters = new ArrayList();
+    StringBuffer value = new StringBuffer();
+}
+{
+    name=<IDENTIFIER_T>
+    Parameters(parameters)
+    (<COLON_T> | <COLON_T_QP>)
+    PropertyValue(value)
+    <CRLF_T>
+    {   
+        return new ParserProperty(name.toString(),
+                        false,
+                        parameters,
+                        value.toString());
+    }
+}
+
+ParserProperty XAlarmProperty() : {
+    Token name;
+    ArrayList parameters = new ArrayList();
+    StringBuffer value = new StringBuffer();
+    int require = 0;
+    StringBuffer alarms = new StringBuffer();
+}
+{
+    (
+         name=<AALARM_T>
+         { require = 3; }
+    |
+         name=<DALARM_T>
+         { require = 3; }
+    |
+         name=<PALARM_T>
+         { require = 3; }
+    |
+         name=<MALARM_T>
+         { require = 4; }
+    )
+    Parameters(parameters)
+    <EXCEPTION_COLON_T>
+    ExceptionValue(value)
+    (
+        <EXCEPTION_SEMI_T>
+        { value.append(";"); }
+        ExceptionValue(value)
+        // FIXME: need to check with required
+    )*
+    <CRLF_T>
+    {
+        return new ParserProperty(name.toString(),
+                        false,
+                        parameters,
+                        value.toString());
+    }
+}
+
+void ExceptionValue(StringBuffer value) : {
+    Token tok;
+}
+{
+    (
+        (
+             <EXCEPTION_LINEFOLD_T> // eating linewrap and ignore them.
+        )?
+        tok=<EXCEPTION_VALUE_PART_T>
+        { value.append(tok.toString()); }
+    )*
+}
+
+void PropertyValue(StringBuffer buffer) : {
+    Token value;
+}
+{
+    (
+        value=<PROP_LINEFOLD_T>
+        // do nothing
+    |
+        value=<PROP_VALUE_T>
+        { buffer.append(value.toString()); }
+    |
+    value=<PROP_LINEFOLD_T_QP>
+    // do nothing
+    |
+    value=<PROP_VALUE_T_QP>
+        { buffer.append(value.toString()); }
+    |
+        value=<PROP_EXCEPTIONS_T_QP>
+    { buffer.append(value.toString()); }
+    |
+        value=<PROP_EXCEPTIONS_SPLIT_T_1_QP>
+        {
+            String qpSplit = value.toString();
+            qpSplit = qpSplit.substring(0,2) + qpSplit.charAt(qpSplit.length() - 1);
+            buffer.append(qpSplit);
+        }
+    |
+        value=<PROP_EXCEPTIONS_SPLIT_T_2_QP>
+        {
+            qpSplit = value.toString();
+            qpSplit = '=' + qpSplit.substring(qpSplit.length() - 2);
+            buffer.append(qpSplit);
+        }
+    )*
+}
+
+void Parameters(ArrayList parameters) : {
+}
+{
+    (
+         Parameter(parameters)
+    )*
+}
+
+void Parameter(ArrayList parameters) : {
+
+    Token name = null;
+    Token value = null;
+    
+    StringBuffer nameBuf = new StringBuffer();
+    StringBuffer valueBuf = new StringBuffer();
+    
+    String nameString = null;
+    String valueString = null;
+}
+{
+// Here we combine the parameters from differen states.
+// The lexical state seperates them. Other option is duplicate
+// the grammar rule.
+    ((
+        <SEMICOLON_T>
+    (
+        ParameterNameValue(nameBuf)
+        {
+            nameString = nameBuf.toString();
+        }
+    |
+        name=<EXCEPTION_PARAMETER_T>
+        {
+        nameString = name.toString();
+        }
+        
+    )
+    (
+        <EQUALS_T>
+        ParameterNameValue(valueBuf)
+        { 
+            valueString = valueBuf.toString(); 
+        }
+    |
+        value=<EXCEPTION_PARAMETER_VALUE_T>
+        { 
+            valueString = value.toString(); 
+        }
+    )?)
+    |(
+        <QP_PARAMETER_T>
+        { 
+            nameString = "ENCODING";
+            valueString = "QUOTED-PRINTABLE";
+        }
+    ))
+    { 
+        parameters.add(new ParserParam(nameString,
+                valueString)); 
+    }
+
+}
+
+
+void ParameterNameValue(StringBuffer buffer) : {
+    Token value;
+}
+{
+    (
+        value=<PARAM_LINEFOLD_T>
+        // do nothing
+    |
+        value=<PARAMETER_T>
+        { buffer.append(value.toString()); }
+    )*
+}
+
+
+/**
+ * Tokens used for parsing.
+ */
+TOKEN : {
+    <BEGIN_VCAL_T: "BEGIN:VCALENDAR">
+}
+TOKEN : {
+    <BEGIN_VEVENT_T: "BEGIN:VEVENT">
+}
+TOKEN : {
+    <BEGIN_VTODO_T: "BEGIN:VTODO"> 
+}
+TOKEN : {
+    <END_VCAL_T: "END:VCALENDAR"> 
+}
+TOKEN : {
+    <END_VEVENT_T: "END:VEVENT"> 
+}
+TOKEN : {
+    <END_VTODO_T: "END:VTODO"> 
+}
+TOKEN : {
+    <BEGIN_VTIMEZONE_T: "BEGIN:VTIMEZONE">
+}
+TOKEN : {
+    <BEGIN_STANDARDC_T: "BEGIN:STANDARD">
+}
+TOKEN : {
+    <BEGIN_DAYLIGHTC_T: "BEGIN:DAYLIGHT">
+}
+TOKEN : {
+    <END_VTIMEZONE_T: "END:VTIMEZONE">
+}
+TOKEN : {
+    <END_STANDARDC_T: "END:STANDARD">
+}
+TOKEN : {
+    <END_DAYLIGHTC_T: "END:DAYLIGHT">
+}
+TOKEN : {
+    <BEGIN_VALARM_T: "BEGIN:VALARM">
+}
+TOKEN : {
+    <END_VALARM_T: "END:VALARM">
+}
+TOKEN : {
+    <WS_T: (" "|"\t")> 
+}
+<*>
+TOKEN : {
+    <CRLF_T: ("\r\n" | "\n")+> : DEFAULT // State DEFAULT, if not already
+}
+
+// Some exceptions we make for TOKENS/PROPERTIES, due to different grammar.
+TOKEN : { <AALARM_T: "AALARM"> : EXCEPTION_PARAM_STATE
+|         <DALARM_T: "DALARM"> : EXCEPTION_PARAM_STATE
+|         <MALARM_T: "MALARM"> : EXCEPTION_PARAM_STATE
+|         <PALARM_T: "PALARM"> : EXCEPTION_PARAM_STATE
+}
+<EXCEPTION_PARAM_STATE>
+TOKEN : { <EXCEPTION_PARAMETER_T: ";" (~["\r", "\n", ";", ":", "="])*> // stay in same state 
+|         <EXCEPTION_PARAMETER_VALUE_T: "=" (~["\r", "\n", ";", ":", "="])+> // stay in same state 
+|         <EXCEPTION_COLON_T: ":"> : EXCEPTION_PROP_STATE
+}
+<EXCEPTION_PROP_STATE>
+TOKEN : { <EXCEPTION_SEMI_T: ";"> // stay in same state 
+|         <EXCEPTION_VALUE_PART_T: (~["\r", "\n", "\\", ";"])+> // stay in same state  
+|         <EXCEPTION_LINEFOLD_T: ("\\" <CRLF_T>)> // stay in same state
+}
+
+<PARAMLIST_STATE, PARAMLIST_WITH_QP_STATE>
+TOKEN : {
+    <SEMICOLON_T: ";"> // stay in same state
+|   <EQUALS_T: "="> // stay in same state
+|   <PARAMETER_T: (~["\r", "\n", ";", ":", "="])+> // stay in same state - Can also be a parameter value
+|   <QP_PARAMETER_T: ";ENCODING=QUOTED-PRINTABLE" | ";QUOTED-PRINTABLE"> : PARAMLIST_WITH_QP_STATE
+|   <PARAM_LINEFOLD_T: (<CRLF_T> <WS_T>) > // stay in same state
+}
+
+TOKEN : {
+    <IDENTIFIER_T: ["a"-"z", "A"-"Z"] ((["-", "_"] ["a"-"z", "A"-"Z", "0"-"9"]) | ["a"-"z", "A"-"Z", "0"-"9"])*>
+              : PARAMLIST_STATE
+}
+
+<PARAMLIST_STATE>
+TOKEN : {
+    <COLON_T: ":"> : PROP_VALUE_STATE
+}
+
+<PARAMLIST_WITH_QP_STATE>
+TOKEN : {
+    <COLON_T_QP: ":"> : PROP_VALUE_STATE_QP
+}
+
+<PROP_VALUE_STATE>
+TOKEN : { 
+          <PROP_VALUE_T: (~["\r","\n"])+ > // stay in same state
+|         <PROP_LINEFOLD_T: (("\r")? "\n" [" ", "\t"]) > // stay in same state
+}
+<PROP_VALUE_STATE_QP>
+TOKEN : {
+          <PROP_VALUE_T_QP: (~["\r","\n","="])+ > // stay in same state
+|         <PROP_EXCEPTIONS_T_QP: "=" ["0"-"9", "A"-"F", "a"-"f"] ["0"-"9", "A"-"F", "a"-"f"]>
+              // stay in same state
+|         <PROP_LINEFOLD_T_QP: ("=\r\n" | "=\n") > // stay in same state
+|         <PROP_EXCEPTIONS_SPLIT_T_1_QP: "=" ["0"-"9", "A"-"F", "a"-"f"] <PROP_LINEFOLD_T_QP> ["0"-"9", "A"-"F", "a"-"f"]>
+              // stay in same state
+|         <PROP_EXCEPTIONS_SPLIT_T_2_QP: "=" <PROP_LINEFOLD_T_QP> ["0"-"9", "A"-"F", "a"-"f"] ["0"-"9", "A"-"F", "a"-"f"]>
+              // stay in same state  
+}
+

@@ -1,0 +1,172 @@
+Funambol J2ME SyncML API Changes Log
+----------------------------------
+2010-09-22
+    - Bug fix: enclose the server URL in the target tag in a CDATA item, so it
+      can contain any character
+    - Bug fix: in the status to server alert, use the next anchor sent by the
+      server (if the server sent it)
+
+2010-09-14
+    - Removed implementation of Seriaziable for some classes. In most of the
+      cases the serialize/deserialize methods were not even implemented.
+
+2010-09-03
+    - Bug fix: convert chunked string to string when checking if the server
+      required for dev inf (otherwise the server command is ignored)
+
+2010-08-30
+    - Bug fix: do not throw an exception if the server does not specify a
+      RespURI (which is not mandatory by SyncML spec)
+
+2010-04-14
+    - Added a new file sync source that performs the upload via http
+
+2010-04-08
+    - Fixed bug #9009 (items can be duplicated if fast sync are interrupted
+      during receive phase)
+
+2010-03-21
+    - Improvement: allow clients to specify the order in which the engine shall
+      process incoming items (the default behavior is the same as it was before)
+    - Bug fix: incoming items are decoded only depending on their type and not
+      on the sync source type
+
+2010-03-08
+    - Added support for MD5 authentication (merged US4224).
+
+2010-01-19
+    - Added support for DEVICE FULL status from the server
+    - Bug fix: status 418 (already exists) is no longer considered an error
+
+2010-01-15
+    - Added support for server capabilities sent via Put
+    - Bug fix: send status to server results
+    - Bug fix: close streams and files during file synchronization
+
+2009-12-07
+    - Bugs fixed and optimizations in the CacheTracker.
+    - Code updated to use the new StringKeyValueStore interface.
+    - Bug fix: do not invoke SyncSource.setItemStatus on status for
+      map commands which are entirely handled by the engine.
+
+2009-12-03
+    - Do not throw an exception if an item is received before its parent in a
+      hierarchical sync. In this case the engine simply sets a "source parent"
+      property into the SyncItem and allows the SyncSource to handle it.
+
+2009-11-26
+    - Added the SyncReport. An object that summarized what happened during the
+      synchronization. In particular it keeps track of each item exchanged
+      between client and server and its status.
+      This modification changes the public interface of the SyncListener and any
+      client using the API shall be updated accordingly.
+
+2009-11-22
+    - Fix for bug #5812 (wrong status to alert command)
+
+2009-10-09
+    - Fix for bug #7929 (Cancelling a sync may result in a generic error instead
+      of a cancelled error on the BB sync client)
+
+2009-10-06
+    - Added a new property to the SourceConfig where it is possible to limit the
+      number of items to be sent to the server in a single SyncML message during
+      slow syncs.
+
+2009-09-15
+    - Improved SyncManager to allow clients to specify their own TransportAgent
+      (the engine still defaults to an HttpTransportAgent)
+
+2009-09-08
+    - Fixed bug in the SyncManager which did not send SyncHdr status (regression
+      introduced when the SyncMLFormatter was split from the manager)
+
+2009-07-16
+    - Added support of the SupportHierarchicalSync tag in the SyncMLParser
+
+2009-06-03
+    - Added support for server capabilities (US 2276).
+    - Added a first implementation of SyncMLParser and SyncMLFormatter
+
+2009-05-26
+    - Added method to "cancel" a sync from the SyncManager (step 1, does not
+      interrupt network operations)
+    - Use absolute file names as LUID in the FileSyncSource
+
+2009-05-22
+    - Added custome sync mode: one way from client without slow syncs. This sync
+      mode is identical (client side) to one way from client.
+
+2009-05-18
+    - Changed the FileSyncSource which is now able to handle both OMA file objects
+      and raw files.
+    
+2009-05-12
+    - Added the ability to set the SyncItem parent from the TargetParent tag
+      or the SourceParent if not present.
+
+2009-04-28
+    - Merged the portable branch.
+      - The library can be built on various platforms, including Java ME, SE and
+        BB (preliminary support for Android)
+      - Large objects handling is completely performed by the Sync Engine.
+        Sources are just required to create SyncItems with an Input and Output
+        Stream.
+      - The new model is not 100% compatible with the old one and it requires
+        sources to be adjusted to implement the createSyncItem method.
+      - Added some new unit tests
+      - Unit tests are now JUnit 3.8 compataible
+      - The MappingManager now uses a StringKeyValueStore instead of an
+        AbstractRecordStore
+
+2009-03-11
+    - Implementation of ConfigSyncSource to allow configuration synchronization
+
+2009-02-11
+    - Bug fix: SyncManager was invoking the SyncListener with a bogus status at the end 
+      of the sync process 
+
+2009-01-23
+    - Merged branch e_marcoct
+      - First refactoring step for the SyncManager to allow unit testing
+      - Added a concept of TrackableSyncSource, ChangesTracker
+      - Added a FileSyncSource implementation based on TrackableSyncSource that
+        works one way (from client to server)
+      - Added a CacheTracker that tracks changes based on item's fingerprint
+
+2008-11-15
+    - WIFI introduced for Blackberry devices
+    - Connection framework changed
+
+2007-08-10
+Released J2ME client 6.5.0
+
+    - Added SyncListener interface. The SyncManager notifies
+      the interface during synchronization, providing complete
+      information on what is going on.
+    - Extended SyncSource interface to allow retrieving of a synthetic error
+      code and retrival of more information about items to be sent to the server
+      (client can ask for the number of deleted/updated/added items)
+
+2007-07-2 (6.0.11)
+    - Retry on broken connection
+
+2007-06-1 (6.0.10)
+    - Simplified exception scheme
+    - Default User agent changed
+
+2007-05-11 (6.0.8)
+    - Handling of error 503 from server
+
+2007-04-02
+    - syncml parser optimized
+
+2007-02-27
+    - memory optimization
+    - compress http stream
+    - mapping sent for each message
+
+2006-10-27
+    - First import on CVS.
+    - Basic Java ME SyncML implementation
+

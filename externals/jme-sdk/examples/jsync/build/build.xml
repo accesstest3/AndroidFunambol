@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="JSync" basedir=".." default="build">
+
+    <property name="dir.src" value="src"/>
+    <property name="dir.output" value="output"/>
+    <property name="lib.funambol.common" value="../../common/output/se/funambol-se-common.jar"/>
+    <property name="lib.funambol.syncml" value="../../syncml/output/se/funambol-se-syncml.jar"/>
+
+    <target name="clean" description="Delete all generated files">
+        <delete dir="${dir.output}" failonerror="false"/>
+        <delete file="${ant.project.name}.jar"/>
+    </target>
+
+    <target name="compile" description="Compiles the Task">
+        <mkdir dir="${dir.output}"/>
+        <javac srcdir="${dir.src}" destdir="${dir.output}">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.funambol.syncml}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" description="JARs the Task" depends="compile">
+        <unjar src="${lib.funambol.common}" dest="${dir.output}"/>
+        <unjar src="${lib.funambol.syncml}" dest="${dir.output}"/>
+        <jar destfile="${ant.project.name}.jar" basedir="${dir.output}">
+            <manifest>
+                <!-- Who is building this jar? -->
+                <attribute name="Built-By" value="Funambol Inc"/>
+                <!-- Information about the program itself -->
+                <attribute name="Implementation-Vendor" value="Funambol Inc"/>
+                <attribute name="Implementation-Title" value="JSync"/>
+                <attribute name="Implementation-Version" value="0.1"/>
+                <attribute name="Main-Class" value ="com.funambol.jsync.JSync"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="build" depends="jar"/>
+</project>
+

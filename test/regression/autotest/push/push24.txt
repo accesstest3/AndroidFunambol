@@ -1,0 +1,51 @@
+#test list 4882_21
+BeginTest ("push24 - verified when a manually sync is started must not be interrupted by sync from push, and when manually sync finished sync from push started");
+
+#Add pictures
+AddPicture(test-picture-1.jpg);
+AddPicture(test-picture-2.jpg);
+AddPicture(test-picture-3.jpg);
+AddPicture(test-picture-4.jpg);
+
+Wait(2);
+
+#Enable c2s settings
+Include (push_change_c2s_setting.txt);
+
+Wait(2);
+
+# Attempting to start pictures sync manually
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+
+Wait(2);
+
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+
+WaitForSyncToComplete(Pictures, 30, 300);
+
+WaitForSyncToComplete(Contacts, 10, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+Include (push_change_c2s_setting.txt);
+
+# Remove all the picture we added before and sync
+DeletePicture(test-picture-1.jpg);
+DeletePicture(test-picture-2.jpg);
+DeletePicture(test-picture-3.jpg);
+DeletePicture(test-picture-4.jpg);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+
+WaitForSyncToComplete(Pictures, 5, 180);
+CheckExchangedData(Pictures, 0, 0, 4, 0, 0, 0);
+
+Wait(2);
+
+EndTest ();

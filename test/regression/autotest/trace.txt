@@ -1,0 +1,38 @@
+BeginTest("Log to trace");
+
+# Enter settings screen
+KeyPress(KeyMenu);
+KeyPress(KeyLeft);
+KeyPress(KeyLeft);
+KeyPress(KeyFire);
+Wait(1);
+
+# Find Logging level
+KeyPress(KeyUp);
+KeyPress(KeyUp);
+KeyPress(KeyRight);
+KeyPress(KeyRight);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+
+# Enable Trace Log
+KeyPress(KeyFire);
+Wait(2);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+Wait(2);
+
+# Save settings
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+Wait(2);
+#prova.. mi sa che questo non serve
+#KeyPress(KeyFire);
+
+EndTest();

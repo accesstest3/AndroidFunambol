@@ -1,0 +1,56 @@
+#SyncContacts09
+#----On the Server delete data from all possible fields for a record in the Contacts section / Sync----
+
+BeginTest("On the Server delete data from all possible fields for a record in the Contacts section / Sync");
+
+#This include create a new Contact (Mario Rossi) and do a fast sync
+Include(contact01.txt);
+
+#Load a Contact on Server side and delete data from all possible fields of this
+LoadContactOnServer("Mario","Rossi");
+EmptyContactField("DisplayName");
+EmptyContactField("MiddleName");
+EmptyContactField("PrefixName");
+EmptyContactField("SuffixName");
+EmptyContactField("NickName");
+EmptyContactField("TelHome");
+EmptyContactField("TelWork");
+EmptyContactField("TelOther");
+EmptyContactField("TelOther2");
+EmptyContactField("TelCell");
+EmptyContactField("TelPager");
+EmptyContactField("TelFaxHome");
+EmptyContactField("TelFaxWork");
+EmptyContactField("TelCompany");
+EmptyContactField("TelOtherFax");
+EmptyContactField("EmailHome");
+EmptyContactField("EmailWork");
+EmptyContactField("EmailOther");
+EmptyContactField("Birthday");
+EmptyContactField("Organization");
+EmptyContactField("Im");
+EmptyContactField("AddressHome");
+EmptyContactField("AddressWork");
+EmptyContactField("AddressOther");
+EmptyContactField("Website");
+EmptyContactField("WebsiteHome");
+EmptyContactField("WebsiteWork");
+EmptyContactField("Anniversary");
+EmptyContactField("Children");
+EmptyContactField("Spouse");
+EmptyContactField("Title");
+EmptyContactField("Note");
+EmptyContactField("Photo");
+SaveContactOnServer();
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,0,1,0);
+
+#Verify if the contact is updated on Device
+CheckUpdatedContact("Mario","Rossi",true);
+EndTest();

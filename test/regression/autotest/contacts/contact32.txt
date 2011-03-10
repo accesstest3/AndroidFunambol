@@ -1,0 +1,12 @@
+#SyncContacts32
+#----Modify the Login information on the Device-----
+
+BeginTest("Modify the Login information on the Device");
+
+StartMainApp();
+SaveAccount("http://qa2.funambol.com:8080/sync","Benutzername","Passwort");
+
+KeyPress(KeyDown);
+Include("deleteall.txt");
+
+EndTest();

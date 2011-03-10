@@ -1,0 +1,32 @@
+#Calendar device to server
+#---- Add a record in the Calendar section on Device / Sync
+
+BeginTest("calendar_device2server");
+
+Include("c2s_01.txt");
+Include("c2s_02.txt");
+Include("c2s_03.txt");
+Include("c2s_04.txt");
+Include("c2s_05.txt");
+Include("c2s_06.txt");
+Include("c2s_07.txt");
+Include("c2s_08.txt");
+
+Include("c2s_09.txt");
+Include("c2s_10.txt");
+Include("c2s_11.txt");
+Include("c2s_12.txt");
+Include("c2s_13.txt");
+Include("c2s_14.txt");
+Include("c2s_15.txt");
+Include("c2s_16.txt");
+
+Include("c2s_17.txt");
+Include("c2s_18.txt");
+Include("c2s_19.txt");
+Include("c2s_20.txt");
+Include("c2s_21.txt");
+
+Include("reminder.txt");
+
+EndTest();

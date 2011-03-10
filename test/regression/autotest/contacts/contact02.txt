@@ -1,0 +1,58 @@
+#SyncContacts02
+#----On Device add a record in the Contacts section filling in all possible fields / Sync----
+
+BeginTest("On Device add a record in the Contacts section filling in all possible fields / Sync") 
+
+#include in this test deleteall test file for delete all contacts on both sides
+Include(deleteall.txt);
+
+#Create on Device side a new Contact (Luca Bianchi);
+CreateEmptyContact();
+SetContactField(DisplayName,"Luca");
+SetContactField(FirstName,"Luca");
+SetContactField(LastName,"Bianchi");
+SetContactField(MiddleName,"middle");
+SetContactField(PrefixName,"prefix");
+SetContactField(SuffixName,"suffix");
+SetContactField(NickName,"LucaBianchi");
+SetContactField(TelHome,"0382665765979");
+SetContactField(TelWork,"03824534");
+SetContactField(TelOther,"03821234");
+SetContactField(TelOther2,"03824598594");
+SetContactField(TelCell,"3445674");
+SetContactField(TelPager,"48756387");
+SetContactField(TelFaxHome,"67567");
+SetContactField(TelFaxWork,"76567");
+SetContactField(TelCompany,"1234");
+SetContactField(TelOtherFax,"123144566");
+SetContactField(EmailHome,"luca.bianchi@gmail.com");
+SetContactField(EmailWork,"luca.bianchi@work.com");
+SetContactField(EmailOther,"luca.bianchi@other.com");
+SetContactField(Birthday,"1987-09-13");
+SetContactField(Organization,"Funambol;Testing");
+SetContactField(Im,"im@yahoo.com");
+SetContactField(AddressHome,"post;via Bricchetti;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(Website,"http://www.google.it/");
+SetContactField(WebsiteHome,"http://www.unipv.it/");
+SetContactField(WebsiteWork,"http://www.myfunambol.com/");
+SetContactField(Anniversary,"2008-08-14");
+SetContactField(Children,"figlio1");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"i");
+SetContactField(Note,"Prova");
+#SetContactField(Photo,"/sdcard/media/immagine40.jpg");
+SaveContact();
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(6,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",1,0,0,0,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is added on the Server
+CheckNewContactOnServer("Luca","Bianchi",true);
+EndTest();

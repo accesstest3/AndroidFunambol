@@ -1,0 +1,31 @@
+BeginTest("c2s_21");
+
+DeleteAllEvents();
+CreateEmptyEvent();
+SetEventField("Start", "20090201");
+SetEventField("End", "20090216");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "15_days_allday");
+SetEventField("Location", "pavia");
+SetEventField("Description", "note");
+SaveEvent();
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("15_days_allday",true);
+CheckEventAsVCal("15_days_allday",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+TZ:+0000\r\n
+DAYLIGHT:FALSE\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:15_days_allday\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090201\r\n
+DTEND:20090216\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+EndTest();
+

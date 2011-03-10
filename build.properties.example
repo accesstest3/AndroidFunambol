@@ -1,0 +1,28 @@
+## This is an example propertiy file. Just copy it to build.properties
+## and edit the values according to your build environment.
+##
+## Keep in mind that the path separator in this file is always a
+## forward slash (/) also under windows.
+##
+## Funambol Client builds with the 1.0 sdk as well as with version 1.1
+## or version 1.5. Version 1.0 and 1.1 of the sdk are single platform
+## while the 1.5 has multi platform support (currently 1.1 and 1.5)
+## The property android.sdk.version reflects this. Perceive it as a
+## switch between a single platform sdk which is represented by the
+## value 1.0 and the new 1.5 sdk where you can chose between 1.1 and
+## 1.5.
+## Example:
+## sdk-folder=C:/src/lib/android-sdk-windows-1.1_r1
+## android.sdk.version=1.0
+
+sdk-folder=C:/src/lib/android-sdk-windows-1.5_r2
+android.sdk.version=1.5
+
+## Point this to your JavaCC installation directory.
+## If you installed JavaCC under Linux from the software repository of
+## your distribution just point it o the directory where javacc.jar is 
+## located.
+## For example:
+## javacchome=/usr/share/java
+
+javacchome=C:/App/javacc-4.0

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol J2ME SYNCML API.
+================================================================================
+-->
+
+<project name="Funambol Java PIM" default="build" basedir="../..">
+    <!-- Define the tasks. -->
+    <taskdef resource="antenna.properties"/>
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="${user.home}/funambol/build/me/build.properties"/>
+        <property file="build/common.properties"/>
+        <property file="build/me/build.properties"/>
+ 
+        <property name="dir.output"       value="${basedir}/output/me"/>
+        <property name="dir.classes"      value="${dir.output}/classes"/>
+        <property name="dir.src"          value="${basedir}/src"/>
+        <property name="dir.selected.src" value="${dir.output}/selected"/>
+
+        <property name="dir.test"         value="${basedir}/test"        />
+        <property name="dir.test.classes" value="${dir.test}/classes" />
+        <property name="dir.res"          value="${basedir}/test/res"        />
+        <property name="dir.preproc.src"  value="${dir.output}/preproc_src"  />
+        <property name="dir.docs"         value="${basedir}/docs"            />
+        <property name="dir.html"         value="${dir.output}/html"         />
+
+        <property name="dir.tools"        value="${basedir}/../tools"        />
+
+        <!-- External dependencies -->
+        <property name="lib.junit"           value="${basedir}/../tools/funambol-j2me-fjunit.jar"/>
+        <property name="lib.funambol.common" value="${basedir}/../common/output/me/funambol-j2me-common.jar"/>
+        <property name="lib.funambol.syncml" value="${basedir}/../syncml/output/me/funambol-j2me-syncml.jar"/>
+        <property name="wma.jar"             value="${wtk.home}/lib/wma11.jar"/>
+        <property name="mmapi.jar"           value="${wtk.home}/lib/mmapi.jar"/>
+        <property name="jsr75.jar"           value="${wtk.home}/lib/jsr75.jar"/>
+        <property name="dir.pim-parsers"     value="externals/pim-parsers"/>
+
+
+        <!-- Standard SDK runtime environment parameters -->
+        <property name="emu.device"           value="DefaultColorPhone"/>
+        <property name="emu.heapsize"         value="700K"/>
+        <property name="emu.wait"             value="true"/>
+        <property name="version"              value="${release.major}.${release.minor}.${build.number}"/>
+
+        <!-- WTK Definitions -->
+        <property name="wtk.home"                value="C://tools//WTK2.5.1" />
+        <property name="wtk.cldc.version"        value="1.0"/>
+        <property name="wtk.midp.version"        value="2.0"/>
+        <property name="wtk.optionalpda.enabled" value="false"/>
+        <property name="wtk.wma.enabled"         value="true"/>
+        <property name="wtk.debug"               value="false"/>
+
+
+        <property name="jad.filename"            value="PIMTest"/>
+        <property name="jar.filename"            value="PIMTest"/>
+
+        <!-- External dependencies -->
+        <property name="classpath"               value="${wma.jar};${mmapi.jar};${jsr75.jar}"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        
+        <echo message=""/>
+        <echo message="Funambol Java PIM API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage      --> help on usage"/>
+        <echo message=" build      --> builds the project"/>
+        <echo message=" rebuild    --> cleans and builds the project"/>
+        <echo message=" test       --> builds the test project"/>
+        <echo message=" docs       --> builds java-doc"/>
+        <echo message=" run        --> builds and runs the test project"/>
+        <echo message=" debug      --> builds and runs the test with debug active"/>
+        <echo message=" release    --> build release packages"/>
+        <echo message=" clean      --> clean up the build directory"/>
+        <echo message=""/>
+        
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <echo message="Clean output tree ${dir.output}"/>
+        <delete dir="${dir.output}"/>
+        <delete>
+            <fileset dir="." includes="**/*.bak"/>
+        </delete>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="clean,build"/>
+
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="compile">
+        <!--======= Jar up everything ========-->
+        <echo message="Packaging library"/>
+        <jar destfile="${dir.output}/${j2me.name}.jar">
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+        </jar>
+    </target>
+
+    <target name="compile" depends="init, selectfiles, generate_parsers">
+        <mkdir dir="${dir.classes}"/>
+        <wtkbuild srcdir="${dir.selected.src}" destdir="${dir.classes}"
+              target="1.1" source="1.2" preverify="false" debug="${wtk.debug}"
+              listfiles="yes">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.funambol.syncml}"/>
+                <pathelement location="${jsr75.jar}"/>
+            </classpath>
+        </wtkbuild>
+    </target>
+
+    <target name="generate_test_suite" depends="init">
+       <echo message="Generating test suite"/>
+
+       <taskdef name="testsuite" classname="com.funambol.testsuitegenerator.TestSuiteGenerator"
+                classpath="${dir.tools}/TestSuiteGenerator.jar" />
+
+       <testsuite srcdir="${dir.selected.src}/test" destdir="${dir.selected.src}/test"
+                  fjunit="true"/>
+    </target>
+
+    <target name="selecttestfiles" depends="init">
+        <!-- Copy all the files that need to be compiled in a single directory
+             so that we can preprocess them all (when needed)
+        -->
+        <echo message="Selecting test files"/>
+        <mkdir dir="${dir.selected.src}/test"/>
+        <copy todir="${dir.selected.src}/test">
+            <fileset dir="${dir.test}/src">
+                <includesfile name="build/me/metest.includelist"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile_test" depends="selecttestfiles, generate_test_suite">
+        <echo message="Compiling tests"/>
+        <mkdir dir="${dir.test.classes}"/>
+        <echo message="JUnit=${lib.junit}"/>
+        <wtkbuild srcdir="${dir.selected.src}/test" destdir="${dir.test.classes}"
+              target="1.1" source="1.2" preverify="false" debug="${wtk.debug}">
+            <classpath>
+                <pathelement location="${dir.classes}"/>
+                <pathelement location="${lib.junit}"/>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.funambol.syncml}"/>
+                <pathelement location="${jsr75.jar}"/>
+            </classpath>
+
+        </wtkbuild>
+    </target>
+
+    <target name="selectfiles" depends="init">
+        <!-- Copy all the files that need to be compiled in a single directory
+             so that we can preprocess them all (when needed)
+        -->
+        <mkdir dir="${dir.selected.src}"/>
+        <copy todir="${dir.selected.src}">
+            <fileset dir="${dir.src}">
+                <includesfile name="build/me/me.includelist"/>
+            </fileset>
+        </copy>
+
+        <!-- Now copy the files imported from the pim-parsers -->
+        <copy todir="${dir.selected.src}">
+            <fileset dir="${dir.pim-parsers}" includes="**/*" />
+        </copy>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- generate_parsers                                                    -->
+    <!-- ====================================================================-->
+    <!-- Compile sources -->
+    <target name="generate_parsers" depends="init">
+        <echo message="Importing parsers"/>
+
+
+        <mkdir dir="${dir.selected.src}/vcard/generated"/>
+        <mkdir dir="${dir.selected.src}/icalendar/generated"/>
+        <mkdir dir="${dir.selected.src}/xvcalendar/generated"/>
+
+        <delete file="${dir.selected.src}/vcard/generated/VCardSyntaxParser.java"/>
+        <delete file="${dir.selected.src}/icalendar/generated/ICalendarSyntaxParser.java"/>
+        <delete file="${dir.selected.src}/xvcalendar/generated/XVCalendarSyntaxParser.java"/>
+
+        <javacc target="${dir.selected.src}/src/main/javacc/VCardSyntaxParser.jj"
+                outputdirectory="${dir.selected.src}/vcard/generated"
+                javacchome="${javacchome}" />
+
+        <javacc target="${dir.selected.src}/src/main/javacc/ICalendarSyntaxParser.jj"
+                outputdirectory="${dir.selected.src}/icalendar/generated"
+                javacchome="${javacchome}" />
+                
+        <javacc target="${dir.selected.src}/src/main/javacc/XVCalendarSyntaxParser.jj"
+                outputdirectory="${dir.selected.src}/xvcalendar/generated"
+                javacchome="${javacchome}" />
+
+        <antcall target="postprocessjj"/>
+
+        <!-- Remove generated files which we rewrite -->
+        <delete>
+            <fileset dir="${dir.selected.src}/vcard/generated">
+                <include name="ParseException.java"/>
+                <include name="ParserParam.java"/>
+                <include name="ParserProperty.java"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${dir.selected.src}/icalendar/generated">
+                <include name="ParseException.java"/>
+                <include name="ParserParam.java"/>
+                <include name="ParserProperty.java"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${dir.selected.src}/xvcalendar/generated">
+                <include name="ParseException.java"/>
+                <include name="ParserParam.java"/>
+                <include name="ParserProperty.java"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="postprocessjj" depends="init">
+        <echo message="Postprocessing JavaCC generated files" />
+        <taskdef name="postprocessjj" classname="javaccpostprocessor.JavaccPostProcessor"
+                 classpath="${dir.tools}/JavaccPostProcessor.jar" />
+
+        <postprocessjj jjsrcfile="${dir.selected.src}/vcard/generated/VCardSyntaxParser.java">
+        </postprocessjj>
+
+        <move   file   = "${dir.selected.src}/vcard/generated/VCardSyntaxParser.java.pp"
+                tofile = "${dir.selected.src}/vcard/generated/VCardSyntaxParser.java" />
+
+
+        <postprocessjj jjsrcfile="${dir.selected.src}/icalendar/generated/ICalendarSyntaxParser.java">
+        </postprocessjj>
+
+        <move   file   = "${dir.selected.src}/icalendar/generated/ICalendarSyntaxParser.java.pp"
+                tofile = "${dir.selected.src}/icalendar/generated/ICalendarSyntaxParser.java" />
+
+        <postprocessjj jjsrcfile="${dir.selected.src}/xvcalendar/generated/XVCalendarSyntaxParser.java">
+        </postprocessjj>
+
+        <move   file   = "${dir.selected.src}/xvcalendar/generated/XVCalendarSyntaxParser.java.pp"
+                tofile = "${dir.selected.src}/xvcalendar/generated/XVCalendarSyntaxParser.java" />
+
+    </target>
+
+ 
+    <!-- =============================================== -->
+    <!-- JME TEST                                        -->
+    <!-- =============================================== -->
+    <target name="test" depends="compile_test">
+
+        <!-- Unpack the dependent packages -->
+        <unjar src="${lib.junit}" dest="${dir.test.classes}"/>
+        <unjar src="${lib.funambol.common}" dest="${dir.classes}"/>
+        <unjar src="${lib.funambol.syncml}" dest="${dir.classes}"/>
+        <!--
+        <copy todir="${dir.classes}/res">
+            <fileset dir="${dir.res}" includes="*.properties" />
+            <fileset dir="${dir.res}" includes="*.txt" />
+        </copy>
+        -->
+
+        <property name="jad.MIDlet-Permissions" value="javax.microedition.pim.ContactList.read,
+                                                       javax.microedition.pim.ContactList.write,
+                                                       javax.microedition.pim.EventList.read,
+                                                       javax.microedition.pim.EventList.write,
+                                                       javax.microedition.pim.ToDoList.read,
+                                                       javax.microedition.pim.ToDoList.write"/>
+
+
+        <wtkjad jadfile="${dir.output}/${jad.filename}.jad"
+                jarfile="${dir.output}/${jar.filename}.jar"
+                name="PIMTest"
+                vendor="Funambol Inc."
+                version="${version}">
+   
+                <attribute name="MIDlet-Permissions" value="${jad.MIDlet-Permissions}"/>
+
+                <midlet name="PIMTest" class="junit.framework.FunTestRunner"/>
+        </wtkjad>
+
+        <!-- Package everything. Most of the necessary information is
+         contained in the JAD file. Also preverify the result this
+         time. To obfuscate everything, set the corresponding
+         parameter to "true" (requires RetroGuard or ProGuard). The
+         version parameter increments the MIDlet-Version by one. -->
+
+        <wtkpackage jarfile="${dir.output}/${jar.filename}.jar"
+            jadfile="${dir.output}/${jad.filename}.jad"
+            obfuscate="false"
+            preverify="true" classpath="${wma.jar}:${mmapi.jar}:${jsr75.jar}">
+
+            <!-- Package our newly compiled classes. -->
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+            <fileset dir="${dir.test.classes}" includes="**/*.class"/>
+            <!--<fileset file="${lib.junit}"/>-->
+
+            <fileset dir="${dir.classes}" includes="res/*.properties" />
+            <fileset dir="${basedir}/test" includes="res/vcard/*.txt" />
+            <fileset dir="${basedir}/test" includes="res/icalendar/*.txt" />
+            <fileset dir="${basedir}/test" includes="res/xvcalendar/*.vcs" />
+
+        </wtkpackage>
+
+    </target>
+
+    <!-- =============================================== -->
+    <!-- RUN                                             -->
+    <!-- =============================================== -->
+    <target name="run" depends="init">
+        <!-- Start the MIDlet suite -->
+        <exec executable="${wtk.home}/bin/emulator" spawn="false">
+            <arg value="-Xdevice:DefaultColorPhone"/>
+            <arg value="-Xheapsize:1M"/>
+            <arg value="-Xdescriptor:${dir.output}/PIMTest.jad"/>
+            <arg value="-Xdomain:maximum"/>
+        </exec>
+        <!-- 
+        <wtkrun jadfile="${dir.output}/PIMTest.jad"
+                device="DefaultColorPhone" wait="true">
+        </wtkrun>
+        -->
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DEBUG                                           -->
+    <!-- =============================================== -->
+    <target name="debug" depends="init">
+        <wtkrun jadfile="${dir.output}/PIMTest.jad"
+                device="DefaultColorPhone" wait="true" debug="5000">
+        </wtkrun>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <ant antfile="${basedir}/build/build.xml" target="docs">
+            <property name="dir.html"            value="${dir.html}"/>
+            <property name="dir.src"             value="${dir.src}"/>
+            <property name="lib.funambol.common" value="${lib.funambol.common}"/>
+            <property name="lib.funambol.syncml" value="${lib.funambol.syncml}"/>
+            <property name="wtk.home"            value="${wtk.home}"/>
+            <property name="classpath"           value="${classpath}"/>
+            <property name="platform"            value="Java ME"/>
+        </ant>
+     </target>
+
+</project>

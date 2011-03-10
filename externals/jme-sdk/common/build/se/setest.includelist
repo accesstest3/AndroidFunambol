@@ -1,0 +1,13 @@
+com/funambol/platform/FileAdapterTest.java
+com/funambol/util/MD5Test.java
+com/funambol/util/StringUtilTest.java
+com/funambol/util/ThreadPoolTest.java
+com/funambol/util/XmlUtilTest.java
+com/funambol/util/DateUtilTest.java
+com/funambol/util/FileAppenderTest.java
+com/funambol/util/LogTest.java
+com/funambol/util/ChunkedStringTest.java
+com/funambol/util/se/Platform.java
+com/funambol/updater/*
+com/funambol/push/CTPServiceTest.java
+

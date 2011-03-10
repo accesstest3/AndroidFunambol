@@ -1,0 +1,101 @@
+#SyncContacts17
+#----Add a record in the Contacts section both on the Server and on Device / Sync----
+
+BeginTest("Add a record in the Contacts section both on the Server and on Device / Sync");
+
+#include in this test deleteall test file for delete all contacts on both sides
+Include(deleteall.txt);
+
+#Create on Server side a new Contact (Giuseppe Rossi);
+CreateEmptyContactOnServer();
+SetContactField(DisplayName,"GiuseppeR");
+SetContactField(FirstName,"Giuseppe");
+SetContactField(LastName,"Rossi");
+SetContactField(MiddleName,"mi");
+SetContactField(PrefixName,"pr");
+SetContactField(SuffixName,"suf");
+SetContactField(NickName,"GiuseppeRossi");
+SetContactField(TelHome,"345543");
+SetContactField(TelWork,"5235");
+SetContactField(TelOther,"52345");
+SetContactField(TelOther2,"14134616");
+SetContactField(TelCell,"134616");
+SetContactField(TelPager,"541351");
+SetContactField(TelFaxHome,"23143");
+SetContactField(TelFaxWork,"123414");
+SetContactField(TelCompany,"1341423");
+SetContactField(TelOtherFax,"54351");
+SetContactField(EmailHome,"giuseppe.rossi@gmail.com");
+SetContactField(EmailWork,"giuseppe.rossi@work.com");
+SetContactField(EmailOther,"giuseppe.rossi@other.com");
+SetContactField(Birthday,"1946-08-11");
+SetContactField(Organization,"Funa;Test");
+SetContactField(Im,"giuseppe.rossi@yahoo.com");
+SetContactField(AddressHome,"post;via 1;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via 2;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via 3;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sito1");
+SetContactField(WebsiteHome,"sito2");
+SetContactField(WebsiteWork,"sito3");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"Gianluca");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContactOnServer();
+RefreshServer(Contacts);
+
+#Create on Device side a new Contact (Luca Bianchi);
+CreateEmptyContact();
+SetContactField(DisplayName,"Luca");
+SetContactField(FirstName,"Luca");
+SetContactField(LastName,"Bianchi");
+SetContactField(MiddleName,"middle");
+SetContactField(PrefixName,"prefix");
+SetContactField(SuffixName,"suffix");
+SetContactField(NickName,"LucaBianchi");
+SetContactField(TelHome,"0382665765979");
+SetContactField(TelWork,"03824534");
+SetContactField(TelOther,"03821234");
+SetContactField(TelOther2,"03824598594");
+SetContactField(TelCell,"3445674");
+SetContactField(TelPager,"48756387");
+SetContactField(TelFaxHome,"67567");
+SetContactField(TelFaxWork,"76567");
+SetContactField(TelCompany,"1234");
+SetContactField(TelOtherFax,"123144566");
+SetContactField(EmailHome,"luca.bianchi@gmail.com");
+SetContactField(EmailWork,"luca.bianchi@work.com");
+SetContactField(EmailOther,"luca.bianchi@other.com");
+SetContactField(Birthday,"1987-09-13");
+SetContactField(Organization,"Funambol;Testing");
+SetContactField(Im,"im@yahoo.com");
+SetContactField(AddressHome,"post;via Bricchetti;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(Website,"http://www.google.it/");
+SetContactField(WebsiteHome,"http://www.unipv.it/");
+SetContactField(WebsiteWork,"http://www.myfunambol.com/");
+SetContactField(Anniversary,"2008-08-14");
+SetContactField(Children,"figlio1");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"i");
+SetContactField(Note,"Prova");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,200);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",1,0,0,1,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is added on Device
+CheckNewContact("Giuseppe","Rossi",true);
+
+#Verify if the contact is added on Server
+CheckNewContactOnServer("Luca","Bianchi",true);
+EndTest();

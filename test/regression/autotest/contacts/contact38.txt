@@ -1,0 +1,32 @@
+#SyncContacts38
+#----On server side remove data from some fields for a record in the Contacts section / Slow Sync----
+
+BeginTest("On server side remove data from some fields for a record in the Contacts section / Slow Sync") 
+
+#This include create a record of Contact (Mario Rossi) and do a slow sync
+Include(contact36.txt);
+
+#Load a Contact on Server side and modify some fields of this
+LoadContactOnServer("Mario","Rossi");
+EmptyContactField(DisplayName);
+EmptyContactField(TelCompany);
+EmptyContactField(TelOtherFax);
+EmptyContactField(EmailHome);
+EmptyContactField(EmailWork);
+EmptyContactField(EmailOther);
+EmptyContactField(Birthday);
+EmptyContactField(Organization);
+SaveContactOnServer();
+
+RefreshServer(Contacts);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,1,0,0);
+EndTest();

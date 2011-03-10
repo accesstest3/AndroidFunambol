@@ -1,0 +1,58 @@
+#SyncContacts06
+#----On Device modify data from all fields, for a record in the Contacts section / Sync----
+
+BeginTest("On Device modify data from all fields, for a record in the Contacts section / Sync");
+
+#This include create a new Contact (Luca Bianchi) and do a fast sync
+Include(contact02.txt);
+
+#Load a Contact on Device side and modify all fields of this
+LoadContact("Luca","Bianchi");
+SetContactField(DisplayName,"Lucas");
+#SetContactField(FirstName,"Lucaa");
+#SetContactField(LastName,"Bianchii");
+#SetContactField(MiddleName,"MIDDLENAME");
+SetContactField(PrefixName,"PREFIXNAME");
+SetContactField(SuffixName,"SUFFIXNAME");
+SetContactField(NickName,"BIANCHILUCA");
+SetContactField(TelHome,"123456789");
+SetContactField(TelWork,"234567890");
+SetContactField(TelOther,"345678900");
+SetContactField(TelOther2,"4567890000");
+SetContactField(TelCell,"56789001234");
+SetContactField(TelPager,"6789012345");
+SetContactField(TelFaxHome,"7890123456");
+SetContactField(TelFaxWork,"8901234567");
+SetContactField(TelCompany,"9012345678");
+SetContactField(TelOtherFax,"9012345678");
+SetContactField(EmailHome,"BIANCHI.LUCA@gmail.com");
+SetContactField(EmailWork,"BIANCHI.LUCA@work.com");
+SetContactField(EmailOther,"BIANCHI.LUCA@other.com");
+SetContactField(Birthday,"1987-09-13");
+SetContactField(Organization,"FUNAMBOL;TESTPLANNING");
+SetContactField(Im,"LUCA.BIANCHI@yahoo.com");
+SetContactField(AddressHome,"post;via Abbiategrasso;street;Pavia;Italy;27100;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;27100;country");
+SetContactField(AddressOther,"post;via Altreggiolo;street;Varzo;Italy;28868;country");
+SetContactField(Website,"http://www.my.funambol.com/");
+SetContactField(WebsiteHome,"http://www.unipv.it/ingegneria/");
+SetContactField(WebsiteWork,"http://www.google.it/");
+SetContactField(Anniversary,"2008-08-14");
+SetContactField(Children,"Luigi");
+SetContactField(Spouse,"spouseprova");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Studente di Ingegneria Università di Pavia");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,0,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is updated on Server
+CheckUpdatedContactOnServer("Luca","Bianchi",true);
+EndTest();

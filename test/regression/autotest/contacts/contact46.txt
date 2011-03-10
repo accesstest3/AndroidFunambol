@@ -1,0 +1,54 @@
+#SyncContacts46
+#----On Device modify all fields for the record in the Contacts section / Slow Sync----
+
+BeginTest("On Device modify all fields for the record in the Contacts section / Slow Sync") 
+
+#This include create a new Contact (Luca Bianchi) and do a fast sync
+Include(contact02.txt);
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Luca","Bianchi");
+SetContactField(DisplayName,"aLuca");
+SetContactField(MiddleName,"amiddle");
+SetContactField(PrefixName,"aprefix");
+SetContactField(SuffixName,"asuffix");
+SetContactField(NickName,"aLucaBianchi");
+SetContactField(TelHome,"110382665765979");
+SetContactField(TelWork,"1103824534");
+SetContactField(TelOther,"1103821234");
+SetContactField(TelOther2,"1103824598594");
+SetContactField(TelCell,"113445674");
+SetContactField(TelPager,"1148756387");
+SetContactField(TelFaxHome,"1167567");
+SetContactField(TelFaxWork,"1176567");
+SetContactField(TelCompany,"111234");
+SetContactField(TelOtherFax,"11123144566");
+SetContactField(EmailHome,"aluca.bianchi@gmail.com");
+SetContactField(EmailWork,"aluca.bianchi@work.com");
+SetContactField(EmailOther,"aluca.bianchi@other.com");
+SetContactField(Birthday,"2987-09-13");
+SetContactField(Organization,"aFunambol;aTesting");
+SetContactField(Im,"aim@yahoo.com");
+SetContactField(AddressHome,"apost;avia Bricchetti;astreet;aMilano;aItaly;124356;acountry");
+SetContactField(AddressWork,"apost;avia Ferrata;astreet;aPavia;aItaly;123456;acountry");
+SetContactField(AddressOther,"apost;avia Ferrata;astreet;aPavia;aItaly;123456;acountry");
+SetContactField(Website,"ahttp://www.google.it/");
+SetContactField(WebsiteHome,"ahttp://www.unipv.it/");
+SetContactField(WebsiteWork,"ahttp://www.myfunambol.com/");
+SetContactField(Anniversary,"3008-08-14");
+SetContactField(Children,"afiglio1");
+SetContactField(Spouse,"aspouse");
+SetContactField(Title,"ai");
+SetContactField(Note,"aProva");
+SaveContact();
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,1,0,0);
+EndTest();

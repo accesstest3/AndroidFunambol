@@ -1,0 +1,17 @@
+BeginTest("Calendar End2End S2C");
+
+Include(sync01.txt);
+Include(sync03.txt);
+Include(sync07.txt);
+Include(sync11.txt);
+Include(sync13.txt);
+Include(sync15.txt);
+Include(sync17.txt);
+Include(sync18.txt);
+Include(sync20.txt);
+Include(sync22.txt);
+Include(sync24.txt);
+Include(sync26.txt);
+
+EndTest();
+

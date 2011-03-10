@@ -1,0 +1,42 @@
+#SyncContacts53
+#----On Device modify multiple records in the Contacts section / Slow Sync----
+
+BeginTest("On Device modify multiple records in the Contacts section / Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Luca Bianchi, Pallino Pinko) and do a fast sync
+Include(contact16.txt);
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Mario","Bianchi");
+SetContactField(TelOther,"11111111111");
+SetContactField(TelOther2,"11111111111");
+SetContactField(TelCell,"111111111111");
+SetContactField(TelPager,"1111111111111111");
+SetContactField(TelFaxHome,"11111111111111");
+SetContactField(TelFaxWork,"1111111111111111");
+SetContactField(TelCompany,"11111111111111");
+SetContactField(TelOtherFax,"11111111111");
+SetContactField(EmailHome,"bianchi01@gmail.com");
+SaveContact();
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Giuseppe","Rossi");
+SetContactField(AddressHome,"addr1;addr2;addr3;addr4;addr5;addr6;addr7");
+SetContactField(AddressWork,"addr1;addr2;addr3;addr4;addr5;addr6;addr7");
+SetContactField(AddressOther,"addr1;addr2;addr3;addr4;addr5;addr6;addr7");
+SetContactField(Website,"sitoweb");
+SetContactField(WebsiteHome,"sitoweb2");
+SetContactField(WebsiteWork,"sitoweb3");
+SetContactField(Anniversary,"1900-12-31");
+SaveContact();
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,0,4,0);
+EndTest();

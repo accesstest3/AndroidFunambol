@@ -1,0 +1,50 @@
+#test list 4882_22
+BeginTest ("push25 - verified when a manually sync is started must not be interrupted by sync from push, and when manually sync cancelled sync from push started");
+
+#Add pictures
+AddPicture(test-picture-1.jpg);
+AddPicture(test-picture-2.jpg);
+AddPicture(test-picture-3.jpg);
+AddPicture(test-picture-4.jpg);
+
+Wait(2);
+
+#Enable c2s settings
+Include (push_change_c2s_setting.txt);
+
+Wait(2);
+
+# Attempting to start pictures sync manually
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+
+Wait(2);
+
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+
+#Cancelled picture sync
+CancelSync();
+
+WaitForSyncToComplete(Contacts, 20, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+Include (push_change_c2s_setting.txt);
+
+# Remove all the picture we added before and sync
+DeletePicture(test-picture-1.jpg);
+DeletePicture(test-picture-2.jpg);
+DeletePicture(test-picture-3.jpg);
+DeletePicture(test-picture-4.jpg);
+KeyPress(KeyDown);
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(Pictures, 5, 180);
+
+Wait(2);
+
+EndTest ();

@@ -1,0 +1,8 @@
+BeginTest("End2End");
+
+Include("c2s/c2s.txt");
+Include("s2c/s2c.txt");
+
+Include("sync50.txt");
+
+EndTest();

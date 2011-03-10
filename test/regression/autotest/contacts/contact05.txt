@@ -1,0 +1,58 @@
+#SyncContacts05
+#----On the Server modify data from all fields, for a record in the Contacts section / Sync----
+
+BeginTest("On the Server modify data from all fields, for a record in the Contacts section / Sync");
+
+#This include create a new Contact (Mario Rossi) and do a fast sync
+Include(contact01.txt);
+
+#Load a Contact on Server side and modify all fields of this
+LoadContactOnServer("Mario","Rossi");
+SetContactField(DisplayName,"RossiM");
+#SetContactField(FirstName,"Mario");
+#SetContactField(LastName,"Rossi");
+#SetContactField(MiddleName,"MIDDLENAME");
+SetContactField(PrefixName,"PREFIXNAME");
+SetContactField(SuffixName,"SUFFIXNAME");
+SetContactField(NickName,"ROSSIMARIO");
+SetContactField(TelHome,"12345678912");
+SetContactField(TelWork,"23456789034");
+SetContactField(TelOther,"34567890034");
+SetContactField(TelOther2,"456789000034");
+SetContactField(TelCell,"5678900123434");
+SetContactField(TelPager,"678901234534");
+SetContactField(TelFaxHome,"789012345634");
+SetContactField(TelFaxWork,"890123456734");
+SetContactField(TelCompany,"901234567834");
+SetContactField(TelOtherFax,"901234567834");
+SetContactField(EmailHome,"ROSSI.MARIO@gmail.com");
+SetContactField(EmailWork,"ROSSI.MARIO@work.com");
+SetContactField(EmailOther,"ROSSI.MARIO@other.com");
+SetContactField(Birthday,"1956-02-14");
+SetContactField(Organization,"FUNAMBOL;TESTPLANNING");
+SetContactField(Im,"ROSSI.MARIO@yahoo.com");
+SetContactField(AddressHome,"post;via Tasso;street;Pavia;Italy;27100;country");
+SetContactField(AddressWork,"post;Strada Nuova;street;Pavia;Italy;27100;country");
+SetContactField(AddressOther,"post;Fraz. Riceno;street;Varzo;Italy;28868;country");
+SetContactField(Website,"http://www.my.funambol.com/sync/");
+SetContactField(WebsiteHome,"http://www.unipv.it/lettere/");
+SetContactField(WebsiteWork,"http://www.libero.it/");
+SetContactField(Anniversary,"2008-08-18");
+SetContactField(Children,"Marco");
+SetContactField(Spouse,"spouseprova");
+SetContactField(Title,"Dott.");
+SetContactField(Note,"Studente di Ingegneria Università di Pavia");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContactOnServer();
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,0,1,0);
+
+#Verify if the contact is updated on Device
+CheckUpdatedContact("Mario","Rossi",true);
+EndTest();

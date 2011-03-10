@@ -1,0 +1,55 @@
+BeginTest("Sync18");
+
+Include(../deleteall.txt);
+
+# Create two events on the server. This is needed to have the update and the
+# delete
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_del\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyUp", 5);
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(10, 120);
+
+# Now finalize the test
+
+CreateEmptyEventOnServer();
+SetEventAsVCal(
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Sync18_add\r\n
+DTSTART:20100329\r\n
+DTEND:20100330\r\n
+END:VEVENT\r\n
+END:VCALENDAR");
+SaveEventOnServer();
+
+DeleteEventOnServer(Sync18_del);
+
+RefreshServer(Calendar);
+
+# Perform a sync
+KeyPress("KeyUp", 5);
+KeyPress("KeyDown", 1);
+KeyPress("KeyFire");
+WaitForSyncToComplete(10, 120);
+
+CheckExchangedData("Calendar",0,0,0,1,0,1);
+
+CheckItemsCount("Calendar", 1);
+
+EndTest();

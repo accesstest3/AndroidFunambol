@@ -1,0 +1,32 @@
+#Referring to testlist 4882_20
+
+BeginTest("4882_20");
+
+# Enable device Auto Sync and client C2S push
+Include (push_change_c2s_setting.txt);
+Wait(2);
+
+#Add a contact
+CreateEmptyContact();
+SetContactField(FirstName, Test);
+SetContactField(LastName,  Contact);
+SetContactField(TelHome,   0382665765979);
+SaveContact();
+Wait(1);
+CheckSyncPending(Contacts);
+
+Wait(2);
+# Attempting to start sync manually
+KeyPress(KeyFire);
+
+# Manual sync is not starting as there is already a pending sync in progress.
+# Alert message is displayed
+Wait(2);
+CheckLastAlertMessage("A sync is running. Please wait.");
+
+WaitForSyncToComplete(Contacts, 30, 180);
+
+Wait(4);
+Include (push_change_c2s_setting.txt);
+
+EndTest();

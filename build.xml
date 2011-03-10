@@ -1,0 +1,691 @@
+<?xml version="1.0" ?>
+<project name="funambol-android-sync-client" default="debug">
+    
+    <!-- To use this copy your ant-contrib-x.y.jar to your $ANT_HOME/lib folder -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+    
+    <!-- NOTE: please DO NOT change the properties here,                -
+      -        edit your own build.properties and put them there.       -
+      -                                                                 -->       
+    <property file="${user.home}/funambol/build/android/build.properties"/>
+    <property file="${basedir}/release.properties"/>
+
+    <!-- Preset SDK Version. Valid values are "2.0" -->     
+    <property name="android.sdk.version" value="2.0"/>
+
+    <!-- General SDK location -->
+    <property name="sdk-folder" value="../android_sdk" />
+
+    <!-- Platform specific SDK location -->
+    <condition property="sdk-folder-platform" value="${sdk-folder}/platforms/android-2.0">
+      <equals arg1="${android.sdk.version}" arg2="2.0"/>
+    </condition>
+
+    <!-- Preset tools location -->
+    <property name="android-tools" value="${sdk-folder}/tools"/>
+    <property name="android-tools-platform" value="${sdk-folder-platform}/tools"/>
+
+    <!-- Application Package Name -->
+    <property name="application.package" value="com.funambol.androidsync" />
+    
+    <!-- Application default locale -->
+    <property name="default.locale" value="en" />
+
+    <property name="funambol.j2me"               value="${basedir}/externals/jme-sdk" />
+    <property name="funambol.j2me.common"        value="${funambol.j2me}/common" />
+    <property name="funambol.j2me.common.build"  value="${funambol.j2me.common}/build" />
+    <property name="funambol.j2me.common.output" value="${funambol.j2me.common}/output/android" />
+
+    <property name="funambol.j2me.syncml"        value="${funambol.j2me}/syncml" />
+    <property name="funambol.j2me.syncml.build"  value="${funambol.j2me.syncml}/build" />
+    <property name="funambol.j2me.syncml.output" value="${funambol.j2me.syncml}/output/android" />
+
+    <property name="funambol.j2me.pim"           value="${funambol.j2me}/pim" />
+    <property name="funambol.j2me.pim.build"     value="${funambol.j2me.pim}/build" />
+    <property name="funambol.j2me.pim.output"    value="${funambol.j2me.pim}/output/android" />
+
+    <property name="funambol.j2me.client"        value="${funambol.j2me}/client" />
+    <property name="funambol.j2me.client.build"  value="${funambol.j2me.client}/build" />
+    <property name="funambol.j2me.client.output" value="${funambol.j2me.client}/output/android" />
+    
+    <!-- External dependencies -->
+    <property name="lib.joda.time"               value="${funambol.j2me.pim}/lib/joda-time-1.6.jar"/>
+
+    <!-- The intermediates directory -->
+    <!-- Eclipse uses "bin" for its own output, so we do the same. -->
+    <property name="outdir" value="bin" />
+    
+    <property name="outdir.manifest" value="${outdir}/manifest" />
+    
+    <!-- Some devices, such as HTC Sense powered devices, shows the account type (instead of 
+         the account label) while editing the contacts view options, if you want to show a 
+         different label you should modify the value below. -->
+    <property name="account.label" value="com.funambol" />
+    
+    <!-- ************************************************************************ -->
+    <!-- No user servicable parts below. -->
+
+    <property name="android-framework" value="${android-tools-platform}/framework.aidl" />
+
+    <!-- Input directories -->
+    <property name="resource-dir" value="res" />
+    <property name="asset-dir" value="assets" />
+    <property name="srcdir" value="src" />
+    <property name="testdir" value="test" />
+    <property name="select" value="selected" />
+
+    <!-- Source archive -->
+    <property name="zip-file" value="${ant.project.name}-${application.version}-src.zip" />
+    
+    <condition property="srcdir-ospath"
+            value="${basedir}\${srcdir}"
+            else="${basedir}/${srcdir}" >
+        <os family="windows"/>
+    </condition>
+
+    <property name="external-libs" value="external-libs" />
+    <condition property="external-libs-ospath"
+            value="${basedir}\${external-libs}"
+            else="${basedir}/${external-libs}" >
+        <os family="windows"/>
+    </condition>
+
+    <!-- Output directories -->
+    <property name="outdir-classes" value="${outdir}/classes" />
+    <condition property="outdir-classes-ospath"
+            value="${basedir}\${outdir-classes}"
+            else="${basedir}/${outdir-classes}" >
+        <os family="windows"/>
+    </condition>
+
+    <!-- Create R.java in the source directory -->
+    <property name="outdir-r" value="src" />
+
+    <!-- Intermediate files -->
+    <property name="dex-file" value="classes.dex" />
+    <property name="intermediate-dex" value="${outdir}/${dex-file}" />
+    <condition property="intermediate-dex-ospath"
+            value="${basedir}\${intermediate-dex}"
+            else="${basedir}/${intermediate-dex}" >
+        <os family="windows"/>
+    </condition>
+
+    <!-- The final package file to generate -->
+    <property name="resources-package" value="${outdir}/${ant.project.name}-${application.version}.ap_" />
+    <condition property="resources-package-ospath"
+            value="${basedir}\${resources-package}"
+            else="${basedir}/${resources-package}" >
+        <os family="windows"/>
+    </condition>
+
+    <property name="out-debug-package" value="${outdir}/${ant.project.name}-${application.version}-debug.apk" />
+    <condition property="out-debug-package-ospath"
+            value="${basedir}\${out-debug-package}"
+            else="${basedir}/${out-debug-package}" >
+        <os family="windows"/>
+    </condition>
+
+    <property name="out-unsigned-package" value="${outdir}/${ant.project.name}-${application.version}-unsigned.apk" />
+    <condition property="out-unsigned-package-ospath"
+            value="${basedir}\${out-unsigned-package}"
+            else="${basedir}/${out-unsigned-package}" >
+        <os family="windows"/>
+    </condition>
+
+    <property name="out-signed-package" value="${outdir}/${ant.project.name}-${application.version}.apk" />
+    <condition property="out-signed-package-ospath"
+            value="${basedir}\${out-signed-package}"
+            else="${basedir}/${out-signed-package}" >
+        <os family="windows"/>
+    </condition>
+
+    <!-- Tools -->
+    <condition property="aapt" value="${android-tools-platform}/aapt.exe" else="${android-tools-platform}/aapt" >
+        <os family="windows"/>
+    </condition>
+    <condition property="aidl" value="${android-tools-platform}/aidl.exe" else="${android-tools-platform}/aidl" >
+        <os family="windows"/>
+    </condition>
+    <condition property="adb" value="${android-tools}/adb.exe" else="${android-tools}/adb" >
+        <os family="windows"/>
+    </condition>
+    <condition property="dx" value="${android-tools-platform}/dx.bat" else="${android-tools-platform}/dx" >
+        <os family="windows"/>
+    </condition>
+    <condition property="apk-builder" value="${android-tools}/apkbuilder.bat" else="${android-tools}/apkbuilder" >
+        <os family="windows"/>
+    </condition>
+    <condition property="zipalign" value="${android-tools}/zipalign.exe" else="${android-tools}/zipalign" >
+        <os family="windows"/>
+    </condition>
+
+    <property name="android-jar" value="${sdk-folder-platform}/android.jar" />
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        <echo message=""/>
+        <echo message="Android Sync Client build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage                --> Print this usage listing"/>
+        <echo message=" debug                --> Build the application apk with debug key"/>
+        <echo message=" release              --> Build the application apk with release key"/>
+        <echo message=" snapshot             --> Build the application snapshot apk with release key using the build snapshot version"/>
+        <echo message=" install              --> Install the application on a running avd or target"/>
+        <echo message=" uninstall            --> Uninstall the application from a running avd or target"/>
+        <echo message=" reinstall            --> Re-install the application on a running avd or target"/>
+        <echo message=" test                 --> Builds automatic test apk environment"/>
+        <echo message=" run-integration-test --> Run Integration test apk on a running avd or target"/>
+        <echo message=""/>
+    </target>
+
+    <!-- Rules -->
+
+    <!-- Create the output directories if they don't exist yet. -->
+    <target name="init">
+        <echo>Creating output directories if needed...</echo>
+        <mkdir dir="${outdir}" />
+        <mkdir dir="${outdir.manifest}" />
+        <mkdir dir="${outdir-classes}" />
+        <mkdir dir="${external-libs-ospath}" />
+        
+        <condition property="test.script.param" value="-e script ${test.script.url}" else="">
+            <isset property="test.script.url"/>
+        </condition>
+        <condition property="test.failure.param" value="-e stopOnFailure ${stop.on.failure}" else="">
+            <isset property="stop.on.failure"/>
+        </condition>
+        
+        <property name="application.version" value="1.0"/>
+        
+        <!-- Replace account type occurences -->
+        <replace dir="res/xml" value="&quot;${account.label}&quot;">
+            <include name="*.xml"/>
+            <include name="values/application.xml"/>
+            <replacetoken>&quot;com.funambol&quot;</replacetoken>
+        </replace>
+        <replace dir="res/values" value="&gt;${account.label}&lt;">
+            <include name="application.xml"/>
+            <replacetoken>&gt;com.funambol&lt;</replacetoken>
+        </replace>
+
+    </target>
+
+    <!-- Create string resource for each localization file -->
+    <target name="localization">
+        <echo>Creating localized string tables</echo>
+
+        <foreach param="locale.input.file" target="localization-single">
+            <path>
+                <fileset dir="localization">
+                    <filename name="*.properties" />
+                    <!-- Exclude custom localization files. They will be
+                     read later in localization-single task -->
+                    <exclude name="*-custom.properties"/>
+                </fileset>
+            </path>
+        </foreach>
+    </target>
+
+    <!-- Convert a single property file to a strings resource -->
+    <target name="localization-single">
+    
+        <propertyregex property="locale.suffix"
+              input="${locale.input.file}"
+              regexp="lang(\-?.*)\.properties"
+              select="\1"
+              casesensitive="false" /> 
+              
+        <if>
+            <equals arg1="${locale.suffix}" arg2="-${default.locale}"/>
+            <then> <property name="locale.suffix2" value="" /> </then>
+            <else> <property name="locale.suffix2" value="${locale.suffix}" /> </else>
+        </if>
+        
+        <if>
+            <available file="${basedir}/localization/lang${locale.suffix}-custom.properties"/>
+            <then> <property name="locale.input.file.custom" 
+                value="${basedir}/localization/lang${locale.suffix}-custom.properties" /> </then>
+            <else> <property name="locale.input.file.custom" value="" /> </else>
+        </if>
+
+        <property name="locale.output.folder" value="res/values${locale.suffix2}" />
+        <property name="locale.output.file" value="${locale.output.folder}/strings.xml" />
+        <echo message="Converting ${locale.input.file} to ${locale.output.file}" />
+        <echo message="Custom input file: ${locale.input.file.custom}" />
+        
+        <mkdir dir="${locale.output.folder}"/>
+        <exec executable="java" failonerror="true">
+           <arg value="-jar"/>
+           <arg value="localization/StringTableGenerator/StringTableGenerator.jar"/>
+           <arg value="${locale.input.file}"/>
+           <arg value="${locale.input.file.custom}"/>
+           <arg value="${locale.output.file}"/>
+        </exec>
+    </target> 
+
+    <!-- Generate the R.java file for this project's resources. -->
+    <target name="resource-src" depends="init, localization, prepare-manifest-app-version">
+        <echo>Generating R.java / Manifest.java from the resources...</echo>
+        <exec executable="${aapt}" failonerror="true">
+            <arg value="package" />
+            <arg value="-m" />
+            <arg value="-J" />
+            <arg value="${outdir-r}" />
+            <arg value="-M" />
+            <arg value="${outdir.manifest}/AndroidManifest.xml" />
+            <arg value="-S" />
+            <arg value="${resource-dir}" />
+            <arg value="-I" />
+            <arg value="${android-jar}" />
+        </exec>
+        
+    </target>
+
+    <!-- Generate java classes from .aidl files. -->
+    <target name="aidl" depends="init">
+        <echo>Compiling aidl files into Java classes...</echo>
+        <apply executable="${aidl}" failonerror="true">
+            <arg value="-p${android-framework}" />
+            <arg value="-I${srcdir}" />
+            <fileset dir="${srcdir}">
+                <include name="**/*.aidl"/>
+            </fileset>
+        </apply>
+    </target>
+
+    <target name="funambol-sdk" depends="init">
+        <ant antfile="build/android/build.xml" inheritAll="true" target="build" dir="${funambol.j2me.common}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" target="build" dir="${funambol.j2me.syncml}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" target="build" dir="${funambol.j2me.pim}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" target="build_client" dir="${funambol.j2me.client}"/>
+
+        <copy todir="${external-libs-ospath}">
+            <fileset dir="${funambol.j2me.syncml.output}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${funambol.j2me.common.output}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${funambol.j2me.pim.output}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${funambol.j2me.client.output}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        <copy file="${lib.joda.time}" todir="${external-libs-ospath}" />
+    </target>
+
+    <!-- Compile this project's .java files into .class files. -->
+    <target name="compile" depends="init, resource-src, aidl, funambol-sdk">
+        <javac encoding="ascii" target="1.5" debug="true" extdirs=""
+                srcdir="${srcdir}"
+                destdir="${outdir-classes}"
+                bootclasspath="${android-jar}">
+            <classpath>
+                <fileset dir="${external-libs}" includes="*.jar"/>
+            </classpath>
+         </javac>
+    </target>
+    
+    <target name="compile-test" depends="init, resource-src, aidl, funambol-sdk" if="enable.test">
+        <javac encoding="ascii" target="1.5" debug="true" extdirs=""
+                srcdir="${testdir}/src"
+                destdir="${outdir-classes}"
+                bootclasspath="${android-jar}">
+            <classpath>
+                <fileset dir="${external-libs}" includes="*.jar"/>
+            </classpath>
+         </javac>
+    </target>
+    
+    <!-- Convert this project's .class files into .dex files. -->
+    <target name="dex" depends="compile,compile-test">
+        <echo>Converting compiled files and external libraries into ${outdir}/${dex-file}...</echo>
+        <apply executable="${dx}" failonerror="true" parallel="true">
+            <arg value="--dex" />
+            <arg value="--output=${intermediate-dex-ospath}" />
+            <arg path="${outdir-classes-ospath}" />
+            <fileset dir="${external-libs}" includes="*.jar"/>
+        </apply>
+    </target>
+
+    <!-- Put the project's resources into the output package file. -->
+    <target name="package-res-and-assets">
+        <echo>Packaging resources and assets...</echo>
+        <exec executable="${aapt}" failonerror="true">
+            <arg value="package" />
+            <arg value="-f" />
+            <arg value="-M" />
+            <arg value="${outdir.manifest}/AndroidManifest.xml" />
+            <arg value="-S" />
+            <arg value="${resource-dir}" />
+            <arg value="-A" />
+            <arg value="${asset-dir}" />
+            <arg value="-I" />
+            <arg value="${android-jar}" />
+            <arg value="-F" />
+            <arg value="${resources-package}" />
+        </exec>
+    </target>
+
+    <!-- Same as package-res-and-assets, but without "-A ${asset-dir}" -->
+    <target name="package-res-no-assets">
+        <echo>Packaging resources...</echo> 
+        <exec executable="${aapt}" failonerror="true">
+            <arg value="package" />
+            <arg value="-f" />
+            <arg value="-M" />
+            <arg value="${outdir.manifest}/AndroidManifest.xml" />
+            <arg value="-S" />
+            <arg value="${resource-dir}" />
+            <!-- No assets directory -->
+            <arg value="-I" />
+            <arg value="${android-jar}" />
+            <arg value="-F" />
+            <arg value="${resources-package}" />
+        </exec>
+    </target>
+
+    <!-- Invoke the proper target depending on whether or not
+         an assets directory is present. -->
+    <!-- TODO: find a nicer way to include the "-A ${asset-dir}" argument
+         only when the assets dir exists. -->
+    <target name="package-res" depends="prepare-manifest-package-name">
+        <available file="${asset-dir}" type="dir"
+                property="res-target" value="and-assets" />
+        <property name="res-target" value="no-assets" />
+        <antcall target="package-res-${res-target}" />
+    </target>
+    
+    <!-- Prepare the manifest package name -->
+    <target name="prepare-manifest-package-name">
+        <echo>Prepare package name: ${application.package}</echo> 
+        <replace file="${outdir.manifest}/AndroidManifest.xml" 
+            token="&quot;com.funambol.android&quot;" 
+            value="&quot;${application.package}&quot;"/>
+    </target>
+    
+    <!-- Prepare the manifest app version -->
+    <target name="prepare-manifest-app-version">
+        
+        <echo>Preparing application version...</echo> 
+        <echo>Version name: ${application.version}</echo> 
+        <echo>Version code: ${application.version.code}</echo> 
+        
+        <replace file="${outdir.manifest}/AndroidManifest.xml" 
+            token="@@@application.version@@@" 
+            value="${application.version}"/>
+        <replace file="${outdir.manifest}/AndroidManifest.xml" 
+            token="@@@application.version.code@@@" 
+            value="${application.version.code}"/>
+    </target>
+
+    <target name="buildBuildInfo">
+        <echo>Creating BuildInfo</echo>
+        <tstamp/>
+        <echo file="${srcdir}/com/funambol/android/BuildInfo.java">
+        /*
+         * DO NOT EDIT THIS FILE
+         * This file is automatically generated at build time.
+         */
+        package com.funambol.android;
+        public class BuildInfo
+        {
+            public final static String VERSION = &quot;${app.version}&quot;;
+            public final static String DATE = &quot;${DSTAMP}&quot;;
+            public final static String MODE = &quot;${build.mode}&quot;;
+            public final static String PACKAGE_NAME = &quot;${application.package}&quot;;
+            public final static boolean UNIT_TEST = ${unit.test.mode};
+            public final static boolean TEST_RECORDING_ENABLED = ${test.recording.enabled};
+        }
+        </echo>
+    </target>
+
+    <!-- Package the application and sign it with a debug key.
+         This is the default target when building. It is used for debug. -->
+    <target name="debug" depends="clean">
+        <property name="build.mode" value="debug"/>
+        <property name="app.version" value="${application.version} (debug)"/>
+        <property name="unit.test.mode" value="false"/>
+        <property name="test.recording.enabled" value="false"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="AndroidManifest.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildDebug"/>
+    </target>
+
+    <!-- Package the application without signing it.
+         This allows for the application to be signed later with an official publishing key. -->
+    <target name="release" depends="clean">
+        <property name="build.mode" value="release"/>
+        <property name="app.version" value="${application.version}"/>
+        <property name="unit.test.mode" value="false"/>
+        <property name="test.recording.enabled" value="false"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="AndroidManifest.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildRelease"/>
+    </target>
+
+    <!-- Package the application without signing it.
+         This allows for the application to be signed later with an official publishing key. -->
+    <target name="snapshot" depends="clean">
+        <property name="build.mode" value="debug"/>
+        <property name="app.version" value="${application.version} (snapshot)"/>
+        <property name="unit.test.mode" value="false"/>
+        <property name="test.recording.enabled" value="false"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="AndroidManifest.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildRelease"/>
+    </target>
+
+    <target name="buildDebug" depends="dex, package-res">
+        <echo>Packaging ${out-debug-package}, and signing it with a debug key...</echo>
+        <antcall target="buildBuildInfo"/>
+        <exec executable="${apk-builder}" failonerror="true">
+            <arg value="${out-debug-package-ospath}" />
+            <arg value="-z" />
+            <arg value="${resources-package-ospath}" />
+            <arg value="-f" />
+            <arg value="${intermediate-dex-ospath}" />
+            <arg value="-rf" />
+            <arg value="${srcdir-ospath}" />
+            <arg value="-rj" />
+            <arg value="${external-libs-ospath}" />
+        </exec>
+    </target>
+
+    <target name="buildRelease" depends="dex, package-res">
+        <echo>Packaging ${out-unsigned-package} for release...</echo>
+        <antcall target="buildBuildInfo"/>
+        <exec executable="${apk-builder}" failonerror="true">
+            <arg value="${out-unsigned-package-ospath}" />
+            <arg value="-u" />
+            <arg value="-z" />
+            <arg value="${resources-package-ospath}" />
+            <arg value="-f" />
+            <arg value="${intermediate-dex-ospath}" />
+            <arg value="-rf" />
+            <arg value="${srcdir-ospath}" />
+            <arg value="-rj" />
+            <arg value="${external-libs-ospath}" />
+        </exec>
+        <exec executable="jarsigner" failonerror="true">
+            <arg value="-keystore"/>
+            <arg value="${keystore.file}"/>
+            <arg value="-storepass"/>
+            <arg value="${keystore.password}"/>
+            <arg value="${out-unsigned-package}"/>
+            <arg value="${keystore.alias}"/>
+        </exec>
+        <exec executable="${zipalign}" failonerror="true">
+            <arg value="-v"/>
+            <arg value="4"/>
+            <arg value="${out-unsigned-package}"/>
+            <arg value="${out-signed-package}"/>
+        </exec>
+    </target>
+
+    <!-- Install the package on the default emulator -->
+    <target name="install">
+        <echo>Installing ${out-debug-package} onto default emulator...</echo>
+        <exec executable="${adb}" failonerror="true">
+            <arg value="wait-for-device" />
+            <arg value="install" />
+            <arg value="${out-debug-package}" />
+        </exec>
+    </target>
+
+    <target name="reinstall">
+        <echo>Installing ${out-debug-package} onto default emulator...</echo>
+        <exec executable="${adb}" failonerror="true">
+            <arg value="install" />
+            <arg value="-r" />
+            <arg value="${out-debug-package}" />
+        </exec>
+    </target>
+
+    <!-- Uinstall the package from the default emulator -->
+    <target name="uninstall">
+        <echo>Uninstalling ${application.package} from the default emulator...</echo>
+        <exec executable="${adb}" failonerror="true">
+            <arg value="uninstall" />
+            <arg value="${application.package}" />
+        </exec>
+    </target>
+    
+    <!-- Unit Test -->
+    <target name="test">
+        <property name="enable.test" value="true" />
+        <property name="build.mode" value="debug"/>
+        <property name="app.version" value="${application.version} (debug)"/>
+        <property name="unit.test.mode" value="true"/>
+        <property name="test.recording.enabled" value="false"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="test/AndroidManifestUT.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildDebug"/>
+    </target>
+
+    <!-- Automatic Test -->
+    <target name="autotest" depends="init, clean">
+        <property name="enable.test" value="true" />
+        <property name="build.mode" value="debug"/>
+        <property name="app.version" value="${application.version} (debug)"/>
+        <property name="unit.test.mode" value="false"/>
+        <property name="test.recording.enabled" value="false"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="test/AndroidManifest.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildDebug"/>
+    </target>
+
+    <!-- Automatic Test -->
+    <target name="testrecorder" depends="init, clean">
+        <property name="build.mode" value="debug"/>
+        <property name="app.version" value="${application.version} (debug)"/>
+        <property name="unit.test.mode" value="false"/>
+        <property name="test.recording.enabled" value="true"/>
+
+        <!-- Copy the correct manifest to the output folder -->
+        <copy file="AndroidManifest.xml" tofile="${outdir.manifest}/AndroidManifest.xml" overwrite="true"/>
+        <antcall target="buildBuildInfo"/>
+        <antcall target="buildDebug"/>
+    </target>
+    
+    <target name="run-unit-test" depends="uninstall,install">
+        <exec executable="${adb}" failonerror="true">
+            <arg line="shell am instrument -w 
+                ${application.package}/android.test.InstrumentationTestRunner" />
+        </exec>
+    </target>
+
+    <target name="run-integration-test" depends="init,uninstall,install">
+        <exec executable="${adb}" failonerror="true">
+            <arg line="shell am instrument ${test.script.param} ${test.failure.param} -w 
+                ${application.package}/com.funambol.android.AndroidScriptRunner" />
+        </exec>
+    </target>
+    
+    <target name="run-test" depends="run-unit-test,run-integration-test" />
+
+    <!-- Build the src package -->
+    <target name="source" depends="init">
+
+        <!-- Delete the temporary directory in case it was left there by mistake -->
+        <delete dir="src-pkg"/>
+
+        <!-- Perform a clean export in a temporary directory -->
+        <exec executable="svn" failonerror="true">
+            <arg value="--username"/>
+            <arg value="guest"/>
+            <arg value="--password"/>
+            <arg value="guest"/>
+            <arg value="--non-interactive"/>
+            <arg value="export"/>
+            <arg value="https://android-client.forge.funambol.org/svn/android-client/tags/${application.version}"/>
+            <arg value="src-pkg"/>
+        </exec>
+
+        <!-- Now zip everything -->
+        <zip zipfile="${outdir}/${zip-file}">
+            <zipfileset dir="src-pkg" includes="**/*" excludes="**/www" />
+        </zip>
+        <!-- Delete the temporary directory -->
+        <delete dir="src-pkg"/>
+    </target>
+
+    
+    <target name="clean">
+        <delete dir="${outdir}"/>
+        <delete dir="${external-libs-ospath}"/>
+        <delete dir="${select}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" 
+            target="clean" dir="${funambol.j2me.common}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" 
+            target="clean" dir="${funambol.j2me.syncml}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" 
+            target="clean" dir="${funambol.j2me.pim}"/>
+        <ant antfile="build/android/build.xml" inheritAll="true" 
+            target="clean" dir="${funambol.j2me.client}"/>
+    </target>
+
+    <target name="autoTestUserGuide" depends="init">
+        <delete dir="test/guide"/>
+        <mkdir dir="test/guide"/>
+        <javadoc
+            doclet="com.funambol.AutoTestDoclet"
+            docletpath="${funambol.j2me.client}/tools/AutoTestDoclet.jar"
+            >
+            <fileset dir="${funambol.j2me.client}/src/com/funambol/client/test">
+                <include name="*UserCommands.java"/>
+            </fileset>
+            <fileset dir="test/src/com/funambol/android/integration">
+                <include name="*UserCommands.java"/>
+            </fileset>
+        </javadoc>
+        <move todir="test/guide">
+            <fileset dir=".">
+                <include name="*.html"/>
+            </fileset>
+        </move>
+
+    </target>
+
+</project>

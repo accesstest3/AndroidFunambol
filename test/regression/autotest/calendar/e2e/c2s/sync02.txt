@@ -1,0 +1,21 @@
+BeginTest("Sync02");
+
+Include(../deleteall.txt);
+
+# Add a new event
+CreateEmptyEvent();
+SetEventField("Summary", "Sync02");
+SetEventField("Location", "pavia");
+SetEventField("Start", "20090113");
+SetEventField("End", "20090114");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+# Synchronize
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",1,0,0,0,0,0);
+
+EndTest();

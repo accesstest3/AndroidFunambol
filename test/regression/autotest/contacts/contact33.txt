@@ -1,0 +1,55 @@
+#SyncContacts33
+#----In the Contacts section on the device, create a new contact specifying for each field a value that is the maximum length of the field Sync-----
+
+BeginTest("In the Contacts section on the device, create a new contact specifying for each field a value that is the maximum length of the field Sync");
+
+#include in this test deleteall test file for delete all contacts on both sides
+Include(deleteall.txt);
+
+
+CreateEmptyContact();
+SetContactField(DisplayName,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(FirstName,"nome");
+SetContactField(LastName,"cognome");
+SetContactField(MiddleName,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(PrefixName,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(SuffixName,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(NickName,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(TelHome,"12312312312323");
+SetContactField(TelWork,"2341231231231234");
+SetContactField(TelOther,"12341231231231234");
+SetContactField(TelOther2,"12341231231231234");
+SetContactField(TelCell,"12341231231231234");
+SetContactField(TelPager,"12341231231231234");
+SetContactField(TelFaxHome,"12341231231231234");
+SetContactField(TelFaxWork,"12341231231231234");
+SetContactField(TelCompany,"12341231231231234");
+SetContactField(TelOtherFax,"12341231231231234");
+SetContactField(EmailHome,"luca.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma@gmail.com");
+SetContactField(EmailWork,"luca.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma@work.com");
+SetContactField(EmailOther,"luca.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma@other.com");
+SetContactField(Birthday,"1987-09-13");
+SetContactField(Organization,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma;provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(Im,"im@provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma.com");
+SetContactField(AddressHome,"post;via Bricchetti;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(Website,"http://www.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma.it/");
+SetContactField(WebsiteHome,"http://www.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma.it/");
+SetContactField(WebsiteWork,"http://www.provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma.com/");
+SetContactField(Anniversary,"2008-08-14");
+SetContactField(Children,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(Spouse,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(Title,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+SetContactField(Note,"provalunghezzadellastringadilunghezzasuperioreallanorma123123123provadilunghezzadellastringadilunghezzasuperioreallanorma");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Fire the synchronization
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+CheckExchangedData("Contacts",1,0,0,0,0,0);
+RefreshServer(Contacts);
+CheckNewContactOnServer("nome","cognome",true);
+EndTest();
+

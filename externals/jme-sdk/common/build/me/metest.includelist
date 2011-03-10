@@ -1,0 +1,9 @@
+com/funambol/common/pim/vcard/*
+com/funambol/platform/FileAdapterTest.java
+com/funambol/platform/me/ChunkedInputStreamTest.java
+com/funambol/push/*
+com/funambol/storage/*
+com/funambol/storage/me/*
+com/funambol/updater/*
+com/funambol/util/*
+com/funambol/util/me/Platform.java

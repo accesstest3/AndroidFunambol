@@ -1,0 +1,34 @@
+#----Startup the application, authenticate and delete all contacts----
+
+BeginTest("Startup the application");
+
+RemoveAccount();
+StartMainApp();
+
+Wait(2);
+KeyPress("KeyDown");
+WriteString("__USER__");
+
+KeyPress("KeyDown");
+WriteString("__PWD__");
+
+KeyPress("KeyDown");
+KeyPress("KeyDelete",20);
+WriteString("__URL__");
+
+KeyPress("KeyDown");
+Wait(1);
+KeyPress("KeyFire");
+Wait(1);
+WaitForAuthToComplete(10,60);
+Wait(60);
+
+# Skip contacts import
+#KeyPress("KeyDown", 6);
+#KeyPress("KeyRight");
+#KeyPress("KeyFire");
+#Wait(1);
+#KeyPress("KeyRight");
+#KeyPress("KeyFire");
+
+EndTest();

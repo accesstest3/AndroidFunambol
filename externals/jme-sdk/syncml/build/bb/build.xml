@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol BlackBerry SYNCML API.
+================================================================================
+-->
+
+<project name="Funambol Java SyncML" default="build" basedir="../..">
+    <!-- Define the tasks. -->
+    <taskdef resource="antenna.properties"/>
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+
+        <property file="${user.home}/funambol/build/bb/build.properties"/>
+        <property file="build/common.properties"/>
+        <property file="build/bb/build.properties"/>
+ 
+        <property name="dir.output"       value="${basedir}/output/bb"/>
+        <property name="dir.classes"      value="${dir.output}/classes"/>
+        <property name="dir.src"          value="${basedir}/src"/>
+
+        <property name="dir.test"         value="${basedir}/test"        />
+        <property name="dir.res"          value="${basedir}/test/res"        />
+        <property name="dir.preproc.src"  value="${dir.output}/preproc_src"  />
+        <property name="dir.docs"         value="${basedir}/docs"            />
+        <property name="dir.output.html"  value="${dir.output}/html"         />
+        <property name="dir.tools"        value="${basedir}/../tools"/>
+        <property name="dir.html"         value="${dir.output}/html"/>
+
+        <!-- External dependencies -->
+        <property name="wma.jar"          value="${wtk.home}/lib/wma11.jar"/>
+        <property name="lib.junit"        value="${dir.tools}/funambol-j2me-fjunit.jar"/>
+        <property name="lib.funambol.common" value="${basedir}/../common/output/bb/funambol-bb-common.jar"/>
+        <property name="lib.kxml"            value="${basedir}/lib/kxml2-min-2.3.0.jar"/>
+        <property name="bb.rim.jar"          value="${bb.jdehome}/lib/net_rim_api.jar"/>
+        <property name="bb.sigtool"          value="${bb.jdehome}/bin/SignatureTool.jar"/>
+
+        <!-- Standard SDK runtime environment parameters -->
+        <property name="emu.device"           value="DefaultColorPhone"/>
+        <property name="emu.heapsize"         value="700K"/>
+        <property name="emu.wait"             value="true"/>
+        <property name="version"              value="${release.major}.${release.minor}.${build.number}"/>
+
+        <!-- WTK Definitions -->
+        <property name="wtk.home"                value="C://tools//WTK2.5.1" />
+        <property name="wtk.cldc.version"        value="1.0"/>
+        <property name="wtk.midp.version"        value="2.0"/>
+        <property name="wtk.optionalpda.enabled" value="false"/>
+        <property name="wtk.wma.enabled"         value="true"/>
+        <property name="debug"                   value="false"/>
+
+        <!-- External dependencies -->
+        <property name="classpath"               value="${jsr75.jar}"/>
+
+        <!-- Names for the testing executable -->
+        <property name="jad.filename"            value="SyncMLTest"/>
+        <property name="jar.filename"            value="SyncMLTest"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        
+        <echo message=""/>
+        <echo message="Funambol Java SyncML API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage      --> help on usage"/>
+        <echo message=" build      --> builds the project"/>
+        <echo message=" rebuild    --> cleans and builds the project"/>
+        <echo message=" test       --> builds the test project"/>
+        <echo message=" docs       --> builds java-doc"/>
+        <echo message=" run        --> builds and runs the test project"/>
+        <echo message=" debug      --> builds and runs the test with debug active"/>
+        <echo message=" release    --> build release packages"/>
+        <echo message=" clean      --> clean up the build directory"/>
+        <echo message=""/>
+        
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <echo message="Clean output tree ${dir.output}"/>
+        <delete dir="${dir.output}"/>
+        <delete>
+            <fileset dir="." includes="**/*.bak"/>
+        </delete>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="clean,build"/>
+
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="compile">
+
+        <unjar src="${lib.kxml}" dest="${dir.classes}"/>
+        <!--======= Jar up everything ========-->
+        <echo message="Packaging library"/>
+        <jar destfile="${dir.output}/${jar.name}.jar">
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+        </jar>
+    </target>
+
+    <target name="compile" depends="init">
+        <mkdir dir="${dir.classes}"/>
+        <wtkbuild srcdir="${dir.src}" destdir="${dir.classes}"
+              target="1.1" source="1.2" debug="${debug}" preverify="false"
+              listfiles="yes">
+            <classpath>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${bb.rim.jar}"/>
+                <pathelement location="${lib.kxml}"/>
+            </classpath>
+        </wtkbuild>
+    </target>
+
+    <target name="generate_test_suite" depends="init">
+       <taskdef name="testsuite" classname="com.funambol.testsuitegenerator.TestSuiteGenerator"
+                classpath="${dir.tools}/TestSuiteGenerator.jar" />
+
+       <testsuite srcdir="${basedir}/test" destdir="${dir.test}"
+                  fjunit="true"/>
+    </target>
+
+    <target name="compile_test" depends="generate_test_suite, compile">
+        <wtkbuild srcdir="${dir.test}" destdir="${dir.classes}"
+              target="1.1" source="1.2" preverify="false" debug="${debug}">
+            <classpath>
+                <pathelement location="${lib.junit}"/>
+                <pathelement location="${lib.funambol.common}"/>
+                <pathelement location="${lib.kxml}"/>
+            </classpath>
+
+        </wtkbuild>
+    </target>
+ 
+    <!-- =============================================== -->
+    <!-- TEST                                            -->
+    <!-- =============================================== -->
+    <target name="test" depends="compile_test">
+
+        <!-- Unpack the dependent packages -->
+        <unjar src="${lib.junit}" dest="${dir.classes}"/>
+        <unjar src="${lib.funambol.common}" dest="${dir.classes}"/>
+        <!--
+        <copy todir="${dir.classes}/res">
+            <fileset dir="${dir.res}" includes="*.properties" />
+            <fileset dir="${dir.res}" includes="*.txt" />
+        </copy>
+        -->
+        <!-- These permissions are needed for VCardParser test -->
+        <property name="jad.MIDlet-Permissions"
+                  value="javax.microedition.pim.ContactList.read,javax.microedition.pim.ContactList.write"/>
+
+        <wtkjad jadfile="${dir.output}/${jad.filename}.jad"
+            jarfile="${dir.output}/${jar.filename}.jar"
+            name="SyncMLTest"
+            vendor="Funambol Inc."
+            version="${version}">
+
+            <attribute name="MIDlet-Permissions" value="${jad.MIDlet-Permissions}"/>
+
+            <midlet name="SyncMLTest" class="junit.framework.FunTestRunner"/>
+
+        </wtkjad>
+
+        <!-- Package everything. Most of the necessary information is
+         contained in the JAD file. Also preverify the result this
+         time. To obfuscate everything, set the corresponding
+         parameter to "true" (requires RetroGuard or ProGuard). The
+         version parameter increments the MIDlet-Version by one. -->
+
+        <wtkpackage jarfile="${dir.output}/${jar.filename}.jar"
+            jadfile="${dir.output}/${jad.filename}.jad"
+            obfuscate="false"
+            preverify="true" classpath="${wma.jar}:${mmapi.jar}:${bb.rim.jar}">
+
+
+            <!-- Package our newly compiled classes. -->
+            <fileset dir="${dir.classes}" includes="**/*.class"/>
+            <!--<fileset file="${lib.junit}"/>-->
+
+            <fileset dir="${dir.classes}" includes="res/*.properties" />
+            <fileset dir="${basedir}/test" includes="res/*.txt" />
+
+        </wtkpackage>
+
+        <antcall target="rapc"/>
+
+    </target>
+
+    <target name="rapc" description="RIM COD Compiler" depends="init">
+        <echo message="RAPC call for BlackBerry environment"/>
+
+        <!-- we need to use the executable instead of wtkrapc because wtkrapc
+             strips the RIM-MIDLet-Flags attribute-->
+
+        <exec executable="${bb.jdehome}/bin/rapc.exe" spawn="false">
+            <arg value="import=${bb.rim.jar}"/>
+            <arg value="codename=${jad.filename}"/>
+            <arg value="-midlet"/>
+            <arg value="jad=${dir.output}/${jad.filename}.jad"/>
+            <arg value="${dir.output}/${jar.filename}.jar"/>
+        </exec>
+
+        <move todir="${dir.output}">
+            <fileset dir="${basedir}">
+                <include name="${jad.filename}*.cod"/>
+                <include name="${jad.filename}*.cso"/>
+                <include name="${jad.filename}*.csl"/>
+                <include name="${jad.filename}*.debug"/>
+                <include name="${jad.filename}*.ja?"/>
+            </fileset>
+        </move>
+
+        <!-- Sign the midlet with RIM SignatureTool. RIM ceritifcates must
+             be copied into the directory containing the SignaturTool.jar -->
+        <!-- The password argument allows the build process to be completely
+             automatic, but it requires a JDE version >= 4.3 -->
+        <exec executable="java" spawn="false">
+            <arg value="-jar"/>
+            <arg value="${bb.sigtool}"/>
+            <!-- pwd_option <arg value="-p"/> -->
+            <!-- pwd_value  <arg value="${bb.sigtool.password}"/> -->
+            <arg value="-a"/>
+            <arg value="-C"/>
+            <arg value="${dir.output}/${jad.filename}.cod"/>
+        </exec>
+
+        <move file="${dir.output}/${jad.filename}.cod"
+              tofile="${dir.output}/${jad.filename}.zip"/>
+        <unzip dest="${dir.output}" src="${dir.output}/${jad.filename}.zip">
+        </unzip>
+        <delete file="${dir.build}/${jad.filename}.jar"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- DOCS                                            -->
+    <!-- =============================================== -->
+    <target name="docs" depends="init">
+        <ant antfile="${basedir}/build/build.xml" target="docs">
+            <property name="dir.html" value="${dir.html}"/>
+            <property name="dir.src" value="${dir.src}"/>
+            <property name="lib.funambol.common" value="${lib.funambol.common}"/>
+            <property name="wtk.home" value="${wtk.home}"/>
+            <property name="classpath" value="${classpath}"/>
+            <property name="platform" value="BlackBerry"/>
+        </ant>
+    </target>
+
+</project>

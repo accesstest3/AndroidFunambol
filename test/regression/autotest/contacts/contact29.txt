@@ -1,0 +1,33 @@
+#SyncContacts29
+#----For a contact, modify data for a field on Device and delete data from the same field on the Server / Sync-----
+
+BeginTest("For a contact, modify data for a field on Device and delete data from the same field on the Server / Sync");
+
+#This include create a new Contact (Luca Bianchi) and do a fast sync
+Include(contact02.txt);
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Luca","Bianchi");
+SetContactField(NickName,"LucaB");
+SetContactField(WebsiteHome,"homesite");
+SaveContact();
+
+#Load a Contact on Server side and modify some fields of this
+LoadContactOnServer("Luca","Bianchi");
+EmptyContactField(NickName);
+EmptyContactField(WebsiteHome);
+SaveContactOnServer();
+
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,0,1,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is updated on Server
+CheckUpdatedContactOnServer("Luca","Bianchi",true);
+EndTest();

@@ -1,0 +1,59 @@
+#test list 4882_23
+BeginTest ("push26 - verified contacts syncs from push in following order");
+
+#Add contacts
+CreateEmptyContact();
+SetContactField(FirstName, Test1);
+SetContactField(LastName,  Contact1);
+SetContactField(TelHome,   0382665765971);
+SaveContact();
+CreateEmptyContact();
+SetContactField(FirstName, Test2);
+SetContactField(LastName,  Contact2);
+SetContactField(TelHome,   0382665765972);
+SaveContact();
+CreateEmptyContact();
+SetContactField(FirstName, Test3);
+SetContactField(LastName,  Contact3);
+SetContactField(TelHome,   0382665765973);
+SaveContact();
+CreateEmptyContact();
+SetContactField(FirstName, Test4);
+SetContactField(LastName,  Contact5);
+SetContactField(TelHome,   0382665765974);
+SaveContact();
+CreateEmptyContact();
+SetContactField(FirstName, Test5);
+SetContactField(LastName,  Contact5);
+SetContactField(TelHome,   0382665765975);
+SaveContact();
+
+#Enable c2s settings
+Include (push_change_c2s_setting.txt);
+
+Wait(2);
+
+# Attempting to start contacts sync manually
+KeyPress(KeyUp);
+KeyPress(KeyFire);
+
+Wait(2);
+
+CreateEmptyContact();
+SetContactField(FirstName, Test6);
+SetContactField(LastName,  Contact6);
+SetContactField(TelHome,   0382665765976);
+SaveContact();
+
+WaitForSyncToComplete(Contacts, 10, 180);
+CheckExchangedData(Contacts, 5, 0, 0, 0, 0, 0);
+
+WaitForSyncToComplete(Contacts, 10, 180);
+CheckExchangedData(Contacts, 1, 0, 0, 0, 0, 0);
+
+
+Include (push_change_c2s_setting.txt);
+
+Wait(2);
+
+EndTest ();

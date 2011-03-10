@@ -1,0 +1,71 @@
+#SyncContacts54
+#----On server side add one record and modify one record in the Contacts section / Slow Sync----
+
+BeginTest("On server side add one record and modify one record in the Contacts section / Slow Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Load a Contact on Server side and modify some fields of this
+LoadContactOnServer("Giuseppe","Rossi");
+SetContactField(SuffixName,"suffisso");
+SetContactField(NickName,"GR");
+SetContactField(TelHome,"111");
+SetContactField(TelWork,"111");
+SetContactField(TelOther,"111");
+SetContactField(Children,"Vincenzo");
+SetContactField(Spouse,"prova");
+SetContactField(Title,"titolo");
+SaveContactOnServer();
+
+#Create on Server side a new Contact (Luca Bianchi);
+CreateEmptyContactOnServer();
+SetContactField(DisplayName,"Luca");
+SetContactField(FirstName,"Luca");
+SetContactField(LastName,"Bianchi");
+SetContactField(MiddleName,"middle");
+SetContactField(PrefixName,"prefix");
+SetContactField(SuffixName,"suffix");
+SetContactField(NickName,"LucaBianchi");
+SetContactField(TelHome,"0382665765979");
+SetContactField(TelWork,"03824534");
+SetContactField(TelOther,"03821234");
+SetContactField(TelOther2,"03824598594");
+SetContactField(TelCell,"3445674");
+SetContactField(TelPager,"48756387");
+SetContactField(TelFaxHome,"67567");
+SetContactField(TelFaxWork,"76567");
+SetContactField(TelCompany,"1234");
+SetContactField(TelOtherFax,"123144566");
+SetContactField(EmailHome,"luca.bianchi@gmail.com");
+SetContactField(EmailWork,"luca.bianchi@work.com");
+SetContactField(EmailOther,"luca.bianchi@other.com");
+SetContactField(Birthday,"1987-09-13");
+SetContactField(Organization,"Funambol;Testing");
+SetContactField(Im,"im@yahoo.com");
+SetContactField(AddressHome,"post;via Bricchetti;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via Ferrata;street;Pavia;Italy;23456;country");
+SetContactField(Website,"http://www.google.it/");
+SetContactField(WebsiteHome,"http://www.unipv.it/");
+SetContactField(WebsiteWork,"http://www.myfunambol.com/");
+SetContactField(Anniversary,"2008-08-14");
+SetContactField(Children,"figlio1");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"i");
+SetContactField(Note,"Prova");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContactOnServer();
+
+RefreshServer(Contacts);
+
+#Force a Slow Sync
+ForceSlowSync("Contacts");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,4,0,1,4,0);
+EndTest();

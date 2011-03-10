@@ -1,0 +1,65 @@
+#SyncContacts26
+#----On the Server add one record and delete one record in the Contacts section / Sync----
+
+BeginTest("On the Server add one record and delete one record in the Contacts section / Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Create on Server side a new Contact (Mario Rossi);
+CreateEmptyContactOnServer();
+SetContactField(DisplayName,"MarioRossi");
+SetContactField(FirstName,"Mario");
+SetContactField(LastName,"Rossi");
+SetContactField(MiddleName,"mi");
+SetContactField(PrefixName,"pr");
+SetContactField(SuffixName,"suf");
+SetContactField(NickName,"MarioRossi");
+SetContactField(TelHome,"23542");
+SetContactField(TelWork,"45245");
+SetContactField(TelOther,"456256");
+SetContactField(TelOther2,"4524");
+SetContactField(TelCell,"23425");
+SetContactField(TelPager,"345");
+SetContactField(TelFaxHome,"1341345");
+SetContactField(TelFaxWork,"134513451");
+SetContactField(TelCompany,"13451");
+SetContactField(TelOtherFax,"1341354");
+SetContactField(EmailHome,"mario.rossi@gmail.com");
+SetContactField(EmailWork,"mario.rossi@work.com");
+SetContactField(EmailOther,"mario.rossi@other.com");
+SetContactField(Birthday,"1936-04-11");
+SetContactField(Organization,"test;Tests");
+SetContactField(Im,"mario.rossi@yahoo.com");
+SetContactField(AddressHome,"post;via webq;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via qerbqeb;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via erbqeb;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sito");
+SetContactField(WebsiteHome,"sito");
+SetContactField(WebsiteWork,"sito");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"none");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContactOnServer();
+
+#Delete Contact On Server Side
+DeleteContactOnServer("Mario","Bianchi");
+
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,1,0,1);
+
+#Verify if the contact is added on Device
+CheckNewContact("Mario","Rossi",true);
+
+#Verify if the contact is deleted on Device
+CheckDeletedContact("Mario","Bianchi");
+EndTest();

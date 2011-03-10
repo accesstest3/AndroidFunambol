@@ -1,0 +1,14 @@
+BeginTest("Sync12");
+
+Include(sync02.txt);
+
+DeleteEvent("Sync02");
+
+# Synchronize
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",0,0,1,0,0,0);
+
+EndTest();

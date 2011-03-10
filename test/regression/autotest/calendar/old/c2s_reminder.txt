@@ -1,0 +1,372 @@
+#Calendar device to server
+#---- Add a record in the Calendar section on Device / Sync
+
+BeginTest("calendar_reminder_no_recurrence_regression");
+
+#deletes all events to have a clean test environment
+Include(deleteall.txt);
+
+
+CreateEmptyEvent();
+SetEventField("Start", "20100620T000000Z");
+SetEventField("End", "20100621T235900Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test20-21jun_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "notaa");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20100624T000000Z");
+SetEventField("End", "20100624T235900Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test24jun_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20101215T100000Z");
+SetEventField("End", "20101215T110000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test15dec_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20101222T100000Z");
+SetEventField("End", "20110122T110000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test22dec_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20101028T110000Z");
+SetEventField("End", "20101102T113000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test28ott_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20100626T160000Z");
+SetEventField("End", "20100626T170000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test26jun_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20100628T210000Z");
+SetEventField("End", "20100628T220000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test28jun_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20101212T020000Z");
+SetEventField("End", "20100628T030000Z");
+SetEventField("AllDay", "0");
+SetEventField("Summary", "Test12dec_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20090110");
+SetEventField("End", "20090111");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "1_days_allday_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+
+CreateEmptyEvent();
+SetEventField("Start", "20090113");
+SetEventField("End", "20090115");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "2_days_allday_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20090116");
+SetEventField("End", "20090119");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "3_days_allday_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20090120");
+SetEventField("End", "20090124");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "4_days_allday_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Start", "20090201");
+SetEventField("End", "20090216");
+SetEventField("AllDay", "1");
+SetEventField("Summary", "15_days_allday_reminder");
+SetEventField("Location", "pavia");
+SetEventField("Reminder", "5");
+SetEventField("Description", "note");
+SaveEvent();
+
+
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+
+WaitForSyncToComplete(Calendar, 6, 120);
+CheckExchangedData(Calendar,13,0,0,0,0,0);
+
+RefreshServer();
+
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test20-21jun_reminder",true);
+CheckEventAsVCal("Test20-21jun_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test20-21jun_reminder\r\n
+DESCRIPTION:notaa\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20100620T000000Z\r\n
+DTEND:20100621T235900Z\r\n
+AALARM:20100619T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test24jun_reminder",true);
+CheckEventAsVCal("Test24jun_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test24jun_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20100624T000000Z\r\n
+DTEND:20100624T235900Z\r\n
+AALARM:20100623T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test15dec_reminder",true);
+CheckEventAsVCal("Test15dec_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test15dec_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20101215T100000Z\r\n
+DTEND:20101215T110000Z\r\n
+AALARM:20101215T095500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test22dec_reminder",true);
+CheckEventAsVCal("Test22dec_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test22dec_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20101222T100000Z\r\n
+DTEND:20110122T110000Z\r\n
+AALARM:20101222T095500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test28ott_reminder",true);
+CheckEventAsVCal("Test28ott_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test28ott_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20101028T110000Z\r\n
+DTEND:20101102T113000Z\r\n
+AALARM:20101028T105500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test26jun_reminder",true);
+CheckEventAsVCal("Test26jun_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test26jun_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20100626T160000Z\r\n
+DTEND:20100626T170000Z\r\n
+AALARM:20100626T155500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test28jun_reminder",true);
+CheckEventAsVCal("Test28jun_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test28jun_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20100628T210000Z\r\n
+DTEND:20100628T220000Z\r\n
+AALARM:20100628T205500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("Test12dec_reminder",true);
+CheckEventAsVCal("Test12dec_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:Test12dec_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20101212T020000Z\r\n
+DTEND:20100628T030000Z\r\n
+AALARM:20101212T015500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:0\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("1_days_allday_reminder",true);
+CheckEventAsVCal("1_days_allday_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:1_days_allday_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090110\r\n
+DTEND:20090111\r\n
+AALARM:20090109T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\nEND:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("2_days_allday_reminder",true);
+CheckEventAsVCal("2_days_allday_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:2_days_allday_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090113\r\n
+DTEND:20090115\r\n
+AALARM:20090112T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("3_days_allday_reminder",true);
+CheckEventAsVCal("3_days_allday_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:3_days_allday_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090116\r\n
+DTEND:20090119\r\n
+AALARM:20090115T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("4_days_allday_reminder",true);
+CheckEventAsVCal("4_days_allday_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:4_days_allday_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090120\r\n
+DTEND:20090124\r\n
+AALARM:20090119T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+#Verify if the event is added on Server
+#CheckNewEventOnServer("15_days_allday_reminder",true);
+CheckEventAsVCal("15_days_allday_reminder",
+"BEGIN:VCALENDAR\r\n
+VERSION:1.0\r\n
+BEGIN:VEVENT\r\n
+SUMMARY:15_days_allday_reminder\r\n
+DESCRIPTION:note\r\n
+LOCATION:pavia\r\n
+CLASS:PUBLIC\r\n
+DTSTART:20090201\r\n
+DTEND:20090216\r\n
+AALARM:20090131T235500Z;;0;\r\n
+X-FUNAMBOL-ALLDAY:1\r\n
+END:VEVENT\r\n
+END:VCALENDAR\r\n");
+
+EndTest();
+

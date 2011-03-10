@@ -1,0 +1,15 @@
+# Referring to testlist 4882_3
+
+BeginTest("4882_3 test case");
+# Enable device Auto Sync and client C2S push
+Include (push_change_c2s_setting.txt);
+
+#Check if Contacts and Pictures sources are enabled
+CheckSourceAutoSyncEnabled("Contacts", true);
+CheckSourceAutoSyncEnabled("Pictures", true);
+
+Wait(2);
+Include (push_change_c2s_setting.txt);
+
+EndTest();
+

@@ -1,0 +1,11 @@
+
+RefreshServer(Contacts);
+DeleteAllContactsOnServer();
+RefreshServer(Contacts);
+
+DeleteAllContacts();
+ForceSlowSync(Contacts);
+
+Wait(5);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 60);

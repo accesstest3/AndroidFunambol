@@ -1,0 +1,47 @@
+#SyncContacts24
+#----On the Server modify one record and delete one record in the Contacts section / Sync----
+
+BeginTest("On the Server modify one record and delete one record in the Contacts section / Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Load a Contact on Server side and modify some fields of this
+LoadContactOnServer("Carlo","Arancio");
+SetContactField(DisplayName,"CarloA");
+SetContactField(MiddleName,"middle");
+SetContactField(PrefixName,"prefix");
+SetContactField(SuffixName,"suffix");
+SetContactField(NickName,"CarloArancio");
+SetContactField(TelHome,"355436235662");
+SetContactField(TelWork,"42456254624565");
+SetContactField(TelOther,"42456254625465");
+SetContactField(AddressHome,"post;via 1;street1;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via 2;street2;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via 3;street3;Pavia;Italy;23456;country");
+SetContactField(Website,"website");
+SetContactField(WebsiteHome,"websitehome");
+SetContactField(WebsiteWork,"websitework");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"caio");
+SetContactField(Spouse,"spouse");
+SaveContactOnServer();
+
+#Delete Contact On Server Side
+DeleteContactOnServer("Mario","Bianchi");
+
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,0,1,1);
+
+#Verify if the contact is updated on Device
+CheckUpdatedContact("Carlo","Arancio",true);
+
+#Verify if the contact is deleted on Device
+CheckDeletedContact("Mario","Bianchi",true);
+EndTest();

@@ -1,0 +1,16 @@
+# Start the Android Test Planning
+
+# Initialize tests (login);
+Include(begintest.txt);
+
+# Set log level to trace
+Include(trace.txt);
+
+# Contacts sync regression
+#Include(contacts/contacts.txt);
+
+# Calendar sync regression
+Include(calendar/calendar.txt);
+
+# C2S push regression
+#Include(push/push.txt);

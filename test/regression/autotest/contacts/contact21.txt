@@ -1,0 +1,163 @@
+#SyncContacts21
+#----On Device add multiple records, modify multiple records and delete multiple records in Contacts section / Sync----
+
+BeginTest("On Device add multiple records, modify multiple records and delete multiple records in Contacts section / Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Luca Bianchi, Pallino Pinko) and do a fast sync
+Include(contact16.txt);
+
+#Create on Device side a new Contact (Mario Rossi);
+CreateEmptyContact();
+SetContactField(DisplayName,"MarioRossi");
+SetContactField(FirstName,"Mario");
+SetContactField(LastName,"Rossi");
+SetContactField(MiddleName,"mi");
+SetContactField(PrefixName,"pr");
+SetContactField(SuffixName,"suf");
+SetContactField(NickName,"MarioRossi");
+SetContactField(TelHome,"23542");
+SetContactField(TelWork,"45245");
+SetContactField(TelOther,"456256");
+SetContactField(TelOther2,"4524");
+SetContactField(TelCell,"23425");
+SetContactField(TelPager,"345");
+SetContactField(TelFaxHome,"1341345");
+SetContactField(TelFaxWork,"134513451");
+SetContactField(TelCompany,"13451");
+SetContactField(TelOtherFax,"1341354");
+SetContactField(EmailHome,"mario.rossi@gmail.com");
+SetContactField(EmailWork,"mario.rossi@work.com");
+SetContactField(EmailOther,"mario.rossi@other.com");
+SetContactField(Birthday,"1936-04-11");
+SetContactField(Organization,"test;Tests");
+SetContactField(Im,"mario.rossi@yahoo.com");
+SetContactField(AddressHome,"post;via webq;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via qerbqeb;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via erbqeb;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sito");
+SetContactField(WebsiteHome,"sito");
+SetContactField(WebsiteWork,"sito");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"none");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Create on Device side a new Contact (Carlo Arancio);
+CreateEmptyContact();
+SetContactField(DisplayName,"CarloA");
+SetContactField(FirstName,"Carlo");
+SetContactField(LastName,"Arancio");
+SetContactField(MiddleName,"mi");
+SetContactField(PrefixName,"pr");
+SetContactField(SuffixName,"suf");
+SetContactField(NickName,"CarloArancio");
+SetContactField(TelHome,"3562");
+SetContactField(TelWork,"45");
+SetContactField(TelOther,"45");
+SetContactField(TelOther2,"45");
+SetContactField(TelCell,"23");
+SetContactField(TelPager,"2434556");
+SetContactField(TelFaxHome,"134");
+SetContactField(TelFaxWork,"134");
+SetContactField(TelCompany,"134");
+SetContactField(TelOtherFax,"1345");
+SetContactField(EmailHome,"carlo.arancio@gmail.com");
+SetContactField(EmailWork,"carlo.arancio@work.com");
+SetContactField(EmailOther,"carlo.arancio@other.com");
+SetContactField(Birthday,"1936-08-11");
+SetContactField(Organization,"Funam;Tests");
+SetContactField(Im,"mario.bianchi@yahoo.com");
+SetContactField(AddressHome,"post;via 1;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post;via 2;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post;via 3;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sito1");
+SetContactField(WebsiteHome,"sito2");
+SetContactField(WebsiteWork,"sito3");
+SetContactField(Anniversary,"2000-07-14");
+SetContactField(Children,"Carletto");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota");
+#SetContactField(Photo,"/data/data/com.android.contacts/immagine40.jpg");
+SaveContact();
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Giuseppe","Rossi");
+SetContactField(DisplayName,"RossiG");
+SetContactField(MiddleName,"m");
+SetContactField(PrefixName,"p");
+SetContactField(SuffixName,"s");
+SetContactField(NickName,"GiuseppeRossi");
+SetContactField(TelHome,"345544563");
+SetContactField(TelWork,"52425235");
+SetContactField(TelOther,"522456345");
+SetContactField(TelOther2,"24562456");
+SetContactField(TelCell,"1346245616");
+SetContactField(TelPager,"541245351");
+SetContactField(TelFaxHome,"232456143");
+SetContactField(TelFaxWork,"1224563414");
+SetContactField(TelCompany,"13245641423");
+SetContactField(TelOtherFax,"542456351");
+SetContactField(EmailHome,"giusepperossi@gmail.com");
+SetContactField(EmailWork,"giusepperossi@work.com");
+SetContactField(EmailOther,"giusepperossi@other.com");
+SetContactField(Organization,"Funambol;Test");
+SetContactField(Im,"giuseppe.rossi@yahoo.com");
+SetContactField(AddressHome,"post1;via 1;street;Milano;Italy;24356;country");
+SetContactField(AddressWork,"post1;via 2;street;Pavia;Italy;23456;country");
+SetContactField(AddressOther,"post1;via 3;street;Pavia;Italy;23456;country");
+SetContactField(Website,"sitositosito");
+SetContactField(Anniversary,"1999-07-14");
+SetContactField(Children,"Gianluca,Mario");
+SetContactField(Spouse,"spouse");
+SetContactField(Title,"Ing.");
+SetContactField(Note,"Prova di nota di Giuseppe Rossi");
+SaveContact();
+
+#Load a Contact on Device side and modify some fields of this
+LoadContact("Mario","Bianchi");
+SetContactField(NickName,"GiuseppeRossi");
+SetContactField(TelHome,"413451");
+SetContactField(TelWork,"1345");
+SetContactField(TelOther,"5221345456345");
+SetContactField(TelOther2,"234");
+SetContactField(TelCell,"341534");
+SetContactField(TelPager,"13451345");
+SetContactField(TelFaxHome,"1345");
+SetContactField(TelFaxWork,"1345");
+SetContactField(TelCompany,"4");
+SetContactField(TelOtherFax,"345");
+SetContactField(EmailHome,"giusepperossi06@gmail.com");
+SetContactField(EmailWork,"giusepperossi06@work.com");
+SetContactField(EmailOther,"giusepperossi06@other.com");
+SetContactField(Organization,"F;T");
+SetContactField(Im,"gius@yahoo.com");
+SaveContact();
+
+#Delete Contacts On Server Side
+DeleteContact("Luca","Bianchi");
+DeleteContact("Pallino","Pinko");
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,200);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",2,2,2,0,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contacts are added on Server
+CheckNewContactOnServer("Mario","Rossi",true);
+CheckNewContactOnServer("Carlo","Arancio",true);
+
+#Verify if the contacts are updated on Server
+CheckUpdatedContactOnServer("Giuseppe","Rossi",true);
+CheckUpdatedContactOnServer("Mario","Bianchi",true);
+
+#Verify if the contacts are deleted on Server
+CheckDeletedContactsOnServer("Luca","Bianchi",true);
+CheckDeletedContactsOnServer("Pallino","Pinko",true);
+EndTest();

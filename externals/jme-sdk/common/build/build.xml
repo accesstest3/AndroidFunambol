@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<!--
+================================================================================
+Build file for Funambol J2ME Common API.
+================================================================================
+-->
+
+
+
+<project name="Funambol J2ME Common" default="build" basedir="..">
+    <!-- Define the tasks. -->
+    <taskdef resource="antenna.properties"/>
+    <!--
+    ========================================================================
+     Setting variable
+    ========================================================================
+    -->
+    <target name="init">
+        <tstamp>
+            <format property="timestamp.MM" pattern="MM" />
+            <format property="timestamp.dd" pattern="dd" />
+            <format property="timestamp.HH" pattern="HH" />
+        </tstamp>
+        <property file="build/build.properties"/>
+   
+        <!-- External dependencies -->
+        <property name="lib.junit"  value="${basedir}/lib/JMUnit4CLDC10.jar"/>
+        <property name="lib.gzip"   value="${basedir}/lib/tinyline-gzip.jar"/>
+        <property name="wma.jar"    value="${wtk.home}/lib/wma11.jar"/>
+        <property name="bb.api.jar" location="${bb.jdehome}/lib/net_rim_api.jar"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- USAGE                                           -->
+    <!-- =============================================== -->
+    <target name="usage" depends="init">
+        
+        <echo message=""/>
+        <echo message="Funambol J2ME Common API build file"/>
+        <echo message="------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" Available targets are :"/>
+        <echo message=""/>
+        <echo message=" usage      --> help on usage"/>
+        <echo message=" build      --> builds the project"/>
+        <echo message=" rebuild    --> cleans and builds the project"/>
+        <echo message=" test       --> builds the test project"/>
+        <echo message=" javadoc    --> builds java-doc"/>
+        <echo message=" release    --> build release packages"/>
+        <echo message=" clean      --> clean up the build directory"/>
+        <echo message=""/>
+        
+    </target>
+    
+    <!-- =============================================== -->
+    <!-- CLEAN                                           -->
+    <!-- =============================================== -->
+    <target name="clean" depends="init">
+        <ant antfile="build/me/build.xml" target="clean"/>
+        <ant antfile="build/bb/build.xml" target="clean"/>
+        <ant antfile="build/se/build.xml" target="clean"/>
+    </target>
+ 
+    <!-- =============================================== -->
+    <!-- REBUILD                                         -->
+    <!-- =============================================== -->
+    <target name="rebuild" depends="clean,build"/>
+    
+    <!-- =============================================== -->
+    <!-- BUILD                                           -->
+    <!-- =============================================== -->
+    <target name="build" depends="init">
+        <ant antfile="build/me/build.xml" target="build"/>
+        <ant antfile="build/bb/build.xml" target="build"/>
+        <ant antfile="build/se/build.xml" target="build"/>
+    </target>
+    
+    
+    <!-- =============================================== -->
+    <!-- TEST                                            -->
+    <!-- =============================================== -->
+    <target name="test" depends="init">
+        <ant antfile="build/me/build.xml" target="test"/>
+        <ant antfile="build/bb/build.xml" target="test"/>
+        <ant antfile="build/se/build.xml" target="test"/>
+    </target>
+
+    <!-- =============================================== -->
+    <!-- JAVADOC                                         -->
+    <!-- =============================================== -->
+    <target name="javadoc" depends="init">
+        <ant antfile="build/me/build.xml" target="docs"/>
+        <ant antfile="build/bb/build.xml" target="docs"/>
+        <ant antfile="build/se/build.xml" target="docs"/>
+        <ant antfile="build/android/build.xml" target="docs"/>
+    </target>
+ 
+ 
+    <!-- =================================================== -->
+    <!-- DOCS (utility target called back from single builds -->
+    <!-- =================================================== -->
+    <target name="docs" depends="init">
+        <javadoc destdir="${dir.html}" author="true" version="true"
+                 use="true" windowtitle="Funambol SyncML API"
+                 sourcepath="${dir.src}"
+                 packagenames="com.funambol.*"
+                 classpath="${classpath};${wtk.home}/lib/midpapi20.jar;${lib.funambol.common}">
+
+            <doctitle>
+                <![CDATA[<!--img src="logo.gif"--> <h1>Funambol Java Common API ${version} for ${platform}</h1>]]>
+            </doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2001-2009 Funambol.</i>]]></bottom>
+        </javadoc>
+    </target>
+</project>

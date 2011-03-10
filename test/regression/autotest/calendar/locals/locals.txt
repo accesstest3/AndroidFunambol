@@ -1,0 +1,6 @@
+BeginTest("Locals");
+
+Include("c2s/c2s.txt");
+Include("s2c/s2c.txt");
+
+EndTest();

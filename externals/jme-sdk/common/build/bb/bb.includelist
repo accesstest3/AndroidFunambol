@@ -1,0 +1,12 @@
+com/funambol/platform/me/*
+com/funambol/platform/me/bb/*
+com/funambol/platform/*
+com/funambol/storage/*
+com/funambol/storage/me/*
+com/funambol/storage/me/bb/*
+com/funambol/util/*
+com/funambol/util/me/*
+com/funambol/util/me/bb/*
+com/funambol/push/*
+com/funambol/updater/*
+

@@ -1,0 +1,92 @@
+--------------------------
+Component Building HOW-TO
+--------------------------
+
+This file contains the instructions to build the source code provided with the zip package of the Java
+client SDK (these same instructions apply if the code is downloaded via SVN).
+
+Currently this package builds on the following platforms:
+
+1. Java MircoEdition (MIDP 2.0)
+2. BlackBerry (OS >= 4.2.1)
+3. Java SE (Java >= 1.1)
+4. Android
+
+--------------------------
+System Requirements
+--------------------------
+
+The system requirements depend on the target platform. The following ones are common to all platforms, while below
+there are the platform specific ones.
+
+    For all platforms:
+    - Download and install Apache Ant: http://ant.apache.org/ (version 1.7 is required)
+
+    For Java Micro Edition:
+    - Download and install Sun Java Wireless Toolkit: http://java.sun.com/products/sjwtoolkit/ (recommended version 2.5.2)
+    - Download and install Apache Antenna: http://antenna.sourceforge.net/ (recommended version 1.0.2)
+
+    For BlackBerry:
+    - Download and install Sun Java Wireless Toolkit: http://java.sun.com/products/sjwtoolkit/ (recommended version 2.5.2)
+    - Download and install Apache Antenna: http://antenna.sourceforge.net/ (recommended version 1.0.2)
+
+    For Java Standard Edition:
+    No additional requirements
+
+    For Android:
+    - Download and install the Android SDK: http://developer.android.com/sdk/1.5_r2/index.html
+
+--------------------------
+Configuring the APIs
+--------------------------
+
+1. Unzip the package into your working directory
+2. Open (create if needed) a build.properties file in ~/funambol/build/<platform>/
+   (where platform is: me for Java MicroEdition
+                       bb for BlackBerry
+                       se for Java StandardEdition
+                       android for Android)
+   [the symbol '~' refers to the user home directory. On Windows system this is generally "Documents and Settings/<user>".
+    See the Java home.user variable for more details]
+
+The set of settings to apply depends on the platform.
+
+3.a For Java Micro Edition:
+    - WTK home on your environment
+      wtk.home=<wtk-home>
+      Example: wtk.home=C:/wtk2.5.2
+
+3.b For BlackBerry:
+    - Same settings as Java MicroEdition
+    - The Blackeberry JDE home dir is required to build the API for BlackBerry; they are compliant with the API provided by RIM:
+      bb.jdehome=<BB jde home dir>
+      Example: bb.jdehome=C:/tools/Research In Motion/Blackberry JDE 4.2.1
+
+3.c For Java Standard Edition
+    No settings are required
+
+3.d For Android
+    - The Android SDK home dir is required
+      sdk-folder=<Android SDK>
+
+--------------------------
+Building the source
+--------------------------
+
+1. Open a shell and go to the directory syncml/build/<platform>
+2. The "ant usage" command shows the list of available targets
+3. Type "ant build" to build
+4. The build process generates the required jar file for the built component into the directory syncml/output/<platform>
+
+In case of any problems with the build process, access the Funambol Community Forge Project  following this link: https://core.forge.funambol.org and contact Funambol for support.
+
+The Funambol Team
+
+
+
+
+
+
+
+
+

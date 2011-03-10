@@ -1,0 +1,65 @@
+Funambol J2ME PIM API Changes Log
+------------------------------------
+2010-09-08
+  - Do not escape escape LF in the vcalendar formatter. According to the spec LF
+    must be encoded using quoted printable.
+
+2010-08-17
+  - Added dependency with joda-time library version 1.6
+  
+2010-06-21
+  - Fixed bug#9545 - Sync fails for certain calendar events with long name and special characters
+
+2010-05-20
+  - Merged branch US1401 with some fixes for VCal handling.
+
+2010-03-08
+  - Fixed bug #8794. Newlines are encoded in quoted printable instead of vCard
+    simple escaping, because QP is more robust.
+
+2010-03-05
+  - Fixed bug #8784. vCards are no longer folded.
+
+2010-02-09
+  - Extended ContactParserListener and VCardFormatter so that the set of fields
+    supported can be filtered according to client needs
+
+2010-02-02
+  - Fixed bug #8357 (Escape character appears as pause signal in phone numbers)
+  
+2009-12-07
+  - Added a generic model for contacts. This model comes with an implementation
+    of vCard parser and formatter.
+
+2009-11-19
+  - Added vCalendar 1.0 formatter implementation.
+  
+2009-11-02
+  - Added vCalendar 1.0 parser implementation.
+
+2009-09-08
+  - Fixed bug #7801 (bday date is one day off in negative TMZ). Work done as
+    part of US 3002.
+
+2009-06-11
+  - Added compilation support for Android
+  - Split utilities between jsr75 dependent ones and others which run on all
+    platforms.
+
+2009-06-09
+  - Parse birthday date using an utility method provided by DateUtil common
+    class instead of self parsing
+
+2009-06-09
+  - Changed build system to have separate builds for the supported platforms.
+    Currently the module compiles on Java ME, BlackBerry and Java SE.
+  - Updated unit tests to be JUnit complaint
+
+2009-05-21
+  - Fixed bug #7193 (Categories data disappears while syncing with BB)
+  - Fixed bug #7268 (Categories Business and Personal created in Outlook do not sync to BB)
+  - Fixed bug #7275 (null category synced on BlackBerry)
+
+2009-05-21
+  - Creation of this document
+

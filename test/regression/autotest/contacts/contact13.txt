@@ -1,0 +1,25 @@
+#SyncContacts13
+#----Delete all records from Contacts section on the Server / Sync----
+
+BeginTest("Delete all records from Contacts section on the Server / Sync");
+
+#This include create new multiple records of Contacts (Giuseppe Rossi, Mario Bianchi, Carlo Arancio, Pallino Pinko) and do a fast sync
+Include(contact15.txt);
+
+#Delete all Contacts On Server Side
+DeleteAllContactsOnServer();
+RefreshServer(Contacts);
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,0,0,0,0,4);
+
+#Verify if the contacts are deleted on Device
+CheckDeletedContact("Giuseppe","Rossi",true);
+CheckDeletedContact("Mario","Bianchi",true);
+CheckDeletedContact("Carlo","Arancio",true);
+CheckDeletedContact("Pallino","Pinko",true);
+EndTest();

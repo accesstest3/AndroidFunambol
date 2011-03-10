@@ -1,0 +1,25 @@
+#testlist 4882_15, 4882_16
+BeginTest ("push 22 - test sync starts from add / delete pictures push");
+Include (push_change_c2s_setting.txt);
+
+#Add a picture
+AddPicture(test-picture-2.jpg);
+Wait(2);
+CheckSyncPending(Pictures);
+WaitForSyncToComplete(Pictures, 30, 60);
+CheckExchangedData(Pictures, 1, 0, 0, 0, 0, 0);
+
+Wait(2);
+
+#Delete a picture
+DeletePicture(test-picture-2.jpg);
+Wait(2);
+CheckSyncPending(Pictures);
+WaitForSyncToComplete(Pictures, 30, 60);
+CheckExchangedData(Pictures, 0, 0, 1, 0, 0, 0);
+
+Wait(2);
+
+Include (push_change_c2s_setting.txt);
+
+EndTest ();

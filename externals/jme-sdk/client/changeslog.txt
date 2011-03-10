@@ -1,0 +1,65 @@
+Funambol Java Client API Changes Log
+------------------------------------
+2010-12-15
+  - Fixed bug #10376. Do not prefill username with phone number in signup screen by default (can
+    be turned on in Customization). 
+
+2010-12-13
+  - Fixed bug #10362 (Disabling sources in Customization makes application
+    crash)
+
+2010-12-12
+  - Fixed bug #10445 (MSU messages don't fully adhere to
+    specs) and #10436(Change error message if password or username are empty)
+
+2010-11-11
+  - Added upgrade support for 1way sync mode removal
+  - Added last sync timestamp in the configuration of a source (no longer rely
+    on anchors)
+
+2010-10-27
+  - Fixed bug #10195 (bandwidth saver is not properly saved)
+  - Fided bug #8969 (The Home screen is not correctly refreshed after cancelling
+    the first sync warning)
+
+2010-10-19
+  - Added support for improved main screen UI in case of single source active
+    (US6260)
+
+2010-07-12
+  - Release 8.7.1
+
+2010-10-08
+  - Introduced SignupScreen and SignupScreenController for the new Mobile
+    Sign Up feature
+
+2010-09-16
+  - Removed obsolete IPC module
+  - Added new sapi module
+
+2010-09-15
+  - Added json library from json.org
+
+2010-06-10
+  - Added time capability to the DisplayManager.showMessage method: 
+    now every message can be displayed for a given amount of milliseconds
+
+2010-06-7
+  - Test framework modified not to block the entire suite at the first exception.
+    If an error occurs it is reported into a report and shown only at the end 
+    of all the test.
+
+2010-03-25
+  - Hide picture sync source when syncing against servers which do not have a
+    config sync source
+
+2010-02-03
+  - The DialogController interface now support the resume of alert dialogs. New
+    Methods were added.  
+
+2010-01-30
+  - Enanched the dialog management logic. Display manager and Dialog controller
+    public interface changed accordingly.
+  
+2009-06-30
+  - First version including the IPC module

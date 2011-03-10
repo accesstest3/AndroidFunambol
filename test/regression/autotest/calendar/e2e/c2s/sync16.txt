@@ -1,0 +1,35 @@
+BeginTest("Sync16");
+
+Include(../deleteall.txt);
+
+# Add 3 events
+
+CreateEmptyEvent();
+SetEventField("Summary", "Sync16_01");
+SetEventField("Start", "20090113");
+SetEventField("End", "20090114");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Summary", "Sync16_02");
+SetEventField("Start", "20090114");
+SetEventField("End", "20090115");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+CreateEmptyEvent();
+SetEventField("Summary", "Sync16_03");
+SetEventField("Start", "20090115");
+SetEventField("End", "20090116");
+SetEventField("AllDay", "1");
+SaveEvent();
+
+# Synchronize
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",3,0,0,0,0,0);
+
+EndTest();

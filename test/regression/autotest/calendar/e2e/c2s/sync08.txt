@@ -1,0 +1,17 @@
+BeginTest("Sync08");
+
+Include(sync02.txt);
+
+# Remove field from an event
+LoadEvent("Sync02");
+EmptyEventField("Location");
+SaveEvent();
+
+# Synchronize
+KeyPress(KeyDown);
+KeyPress(KeyFire);
+WaitForSyncToComplete(5,120);
+
+CheckExchangedData("Calendar",0,1,0,0,0,0);
+
+EndTest();

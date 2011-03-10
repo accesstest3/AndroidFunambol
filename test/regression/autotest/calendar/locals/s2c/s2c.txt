@@ -1,0 +1,43 @@
+BeginTest("Calendar Recurrences S2C");
+
+# Floating events (local without timezone)
+Include("floating.txt");
+Include("floating_allday.txt");
+
+# Daily events
+Include("daily_everyday_noend.txt");
+Include("daily_everyday_noend_allday.txt");
+Include("daily_everyday_enddate_allday.txt");
+Include("daily_everyday_10occurrences_allday.txt");
+Include("daily_every15days_noend_allday.txt");
+Include("daily_every5days_noend_allday.txt");
+Include("daily_every2days_noend_allday.txt");
+Include("daily_weekday_10occurrences.txt");
+Include("daily_weekday_enddate.txt");
+Include("daily_weekday_noend.txt");
+
+# Monthly events
+Include("monthly_every2months_10occurrences.txt");
+Include("monthly_every3months_noend.txt");
+Include("monthly_everymonth_noend_allday.txt");
+Include("monthly_secondtuesday_every2months_10occurrences_allday.txt");
+Include("monthly_secondtuesday_every3months_noend.txt");
+Include("monthly_secondtuesday_everymonth_enddate_allday.txt");
+Include("monthly_lastWednesday_every2months_5occurrences_allday.txt");
+
+# Weekly events
+Include("weekly_2days_every2week_noend_allday.txt");
+Include("weekly_2days_every2weeks_enddate.txt");
+Include("weekly_2days_every6week_100occurrences.txt");
+Include("weekly_3days_every3week_10occurrences.txt");
+Include("weekly_everytue_10occ_allday.txt");
+Include("weekly_everytue_noend_allday.txt");
+
+# Yearly events
+Include("yearly_everyyear_enddate_allday.txt");
+Include("yearly_everyyear_noend_allday.txt");
+Include("yearly_firstsaturday_january_enddate.txt");
+Include("yearly_lasttuesday_january_10occurrences_allday.txt");
+Include("yearly_secondtuesday_january_10occurrences.txt");
+
+EndTest();

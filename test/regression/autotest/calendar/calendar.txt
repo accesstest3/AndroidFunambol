@@ -1,0 +1,10 @@
+BeginTest("Calendar Regression");
+
+#Include all the end to end tests
+Include("e2e/e2e.txt");
+Include("e2e/c2s_reminder.txt");
+
+#Include all the local tests
+Include("locals/locals.txt");
+
+EndTest();

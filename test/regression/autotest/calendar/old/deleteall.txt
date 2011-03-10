@@ -1,0 +1,12 @@
+
+RefreshServer();
+DeleteAllEventsOnServer();
+RefreshServer();
+
+DeleteAllEvents();
+ForceSlowSync(Calendar);
+
+Wait(5);
+KeyPress(KeyDown);
+KeyPress("KeyFire");
+WaitForSyncToComplete(5, 60);

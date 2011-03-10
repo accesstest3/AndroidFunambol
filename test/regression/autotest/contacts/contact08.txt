@@ -1,0 +1,24 @@
+#SyncContacts08
+#----On Device delete data from a field for a record in the Contacts section / Sync----
+
+BeginTest("On Device delete data from a field for a record in the Contacts section / Sync");
+
+#This include create a new Contact (Luca Bianchi) and do a fast sync
+Include(contact02.txt);
+
+#Load a Contact on Device side and delete data from a field of this
+LoadContact("Luca","Bianchi");
+EmptyContactField("WebsiteHome");
+SaveContact();
+
+#Fire the synchronization and wait that is complete
+KeyPress(KeyFire);
+WaitForSyncToComplete(3,120);
+
+#Verify an Exchanged Data [format: (add_client,updated_client,deleted_client,add_server,updated_server,deleted_server)]
+CheckExchangedData("Contacts",0,1,0,0,0,0);
+RefreshServer(Contacts);
+
+#Verify if the contact is updated on Server
+CheckUpdatedContactOnServer("Luca","Bianchi",true);
+EndTest();
